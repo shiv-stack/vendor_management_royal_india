@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../injection_container.dart';
+import '../../../../../injection_container.dart'; 
 import '../../bloc/approval_bloc.dart';
 import '../../../../../features/expense/domain/entities/expense_request_entity.dart';
 
@@ -24,6 +25,13 @@ class HodReviewPage extends StatelessWidget {
 
 class _HodReviewView extends StatelessWidget {
   const _HodReviewView();
+
+  Future<void> _viewBill(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
 
   void _showRejectDialog(BuildContext context, String expenseId) {
     final reasonCtrl = TextEditingController();
@@ -231,6 +239,20 @@ class _HodReviewView extends StatelessWidget {
                           _InfoRow('Advance Paid', fmt.format(req.advancePaid)),
                         _InfoRow('Net Payable', fmt.format(req.netPayable)),
                         _InfoRow('Bill Status', req.paymentStatus.label),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () => _viewBill(req.billAttachmentUrl),
+                            icon: const Icon(Icons.receipt_long_rounded,
+                                size: 18),
+                            label: const Text('View Bill / Invoice'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.blue,
+                              side: const BorderSide(color: Colors.blue),
+                            ),
+                          ),
+                        ),
 
                         // Accounts return reason
                         if (isReturned && req.accountsReturnReason != null) ...[

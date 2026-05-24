@@ -53,6 +53,7 @@ dependencies:
   uuid: ^4.4.0                      # Generate local UUIDs if needed
   logger: ^2.3.0                    # Dev logging
   connectivity_plus: ^6.0.3         # Network state detection
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:

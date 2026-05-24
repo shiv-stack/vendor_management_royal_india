@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../../../core/constants/app_constants.dart';
 import '../../../../../injection_container.dart';
 import '../../bloc/approval_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,6 +27,12 @@ class AccountsPaymentPage extends StatelessWidget {
 
 class _AccountsPaymentView extends StatelessWidget {
   const _AccountsPaymentView();
+  Future<void> _viewBill(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
 
   void _showPaymentDialog(BuildContext context, ExpenseRequestEntity req) {
     final amountCtrl = TextEditingController();
@@ -359,6 +366,20 @@ class _AccountsPaymentView extends StatelessWidget {
                         _InfoRow('Total', fmt.format(req.totalAmount)),
                         _InfoRow('Advance', fmt.format(req.advancePaid)),
                         _InfoRow('Net Payable', fmt.format(req.netPayable)),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () => _viewBill(req.billAttachmentUrl),
+                            icon: const Icon(Icons.receipt_long_rounded,
+                                size: 18),
+                            label: const Text('View Bill / Invoice'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.blue,
+                              side: const BorderSide(color: Colors.blue),
+                            ),
+                          ),
+                        ),
 
                         const SizedBox(height: 16),
 
