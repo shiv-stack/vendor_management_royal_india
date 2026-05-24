@@ -1,0 +1,71 @@
+name: vpms_royal_india
+description: Vendor Payment Management System — Royal India Vacation
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ── Supabase ──────────────────────────────────────────────
+  supabase_flutter: ^2.5.6          # Supabase client + auth + realtime + storage
+
+  # ── State Management ──────────────────────────────────────
+  flutter_bloc: ^8.1.5              # BLoC pattern
+  bloc: ^8.1.4
+
+  # ── Dependency Injection ──────────────────────────────────
+  get_it: ^7.7.0                    # Service locator
+
+  # ── Functional Error Handling ─────────────────────────────
+  fpdart: ^1.1.0                    # Either / Option / TaskEither
+
+  # ── Immutable Models ──────────────────────────────────────
+  freezed_annotation: ^2.4.1        # @freezed annotation (runtime)
+  json_annotation: ^4.9.0           # @JsonSerializable (runtime)
+
+  # ── Navigation ────────────────────────────────────────────
+  go_router: ^13.2.0                # Declarative routing with guards
+
+  # ── UI ────────────────────────────────────────────────────
+  flutter_svg: ^2.0.10+1            # SVG assets
+  cached_network_image: ^3.3.1      # Cached image loading
+  shimmer: ^3.0.0                   # Loading skeletons
+  fluttertoast: ^8.2.5              # Toast notifications
+  intl: ^0.19.0                     # Date/number formatting (INR)
+
+  # ── File Handling ─────────────────────────────────────────
+  file_picker: ^8.0.3               # Pick bill attachments / screenshots
+  image_picker: ^1.1.2              # Camera capture option
+
+  # ── Push Notifications ────────────────────────────────────
+  firebase_core: ^3.1.0
+  firebase_messaging: ^15.0.1       # FCM push notifications
+
+  # ── Local Storage ─────────────────────────────────────────
+  shared_preferences: ^2.2.3        # Store session prefs
+
+  # ── Utilities ─────────────────────────────────────────────
+  equatable: ^2.0.5                 # Value equality
+  uuid: ^4.4.0                      # Generate local UUIDs if needed
+  logger: ^2.3.0                    # Dev logging
+  connectivity_plus: ^6.0.3         # Network state detection
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+  # ── Code Generation ───────────────────────────────────────
+  build_runner: ^2.4.9
+  freezed: ^2.5.2                   # Generates immutable model code
+  json_serializable: ^6.8.0         # Generates fromJson/toJson
+
+flutter:
+  uses-material-design: true
+  assets:
+    # - assets/images/
+    # - assets/icons/
