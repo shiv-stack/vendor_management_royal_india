@@ -1,21 +1,16 @@
 // lib/features/admin/presentation/pages/admin_home_page.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/router/app_router.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/bloc/auth_event.dart';
-import '../../../../injection_container.dart';
 
 class AdminHomePage extends StatelessWidget {
   const AdminHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<AuthBloc>(),
-      child: const _AdminHomeView(),
-    );
+    return const _AdminHomeView();
   }
 }
 
@@ -31,9 +26,9 @@ class _AdminHomeView extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Sign out',
-            onPressed: () {
-              context.read<AuthBloc>().add(const AuthSignOutEvent());
-              context.go('/login');
+            onPressed: () async {
+              await Supabase.instance.client.auth.signOut();
+              if (context.mounted) context.go(AppRoutes.login);
             },
           ),
         ],
@@ -63,8 +58,7 @@ class _AdminHomeView extends StatelessWidget {
             const SizedBox(height: 24),
             Expanded(
               child: GridView.count(
-                crossAxisCount:
-                    MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 children: [
@@ -80,8 +74,7 @@ class _AdminHomeView extends StatelessWidget {
                     title: 'Expense Types',
                     subtitle: 'Define expense categories',
                     color: const Color(0xFF993C1D),
-                    onTap: () =>
-                        context.push(AppRoutes.adminExpenseTypes),
+                    onTap: () => context.push(AppRoutes.adminExpenseTypes),
                   ),
                   _AdminMenuCard(
                     icon: Icons.store_rounded,
