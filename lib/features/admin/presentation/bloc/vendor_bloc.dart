@@ -23,6 +23,7 @@ class VendorCreate extends VendorEvent {
   final String? ifsc;
   final String? contactName;
   final String? contactPhone;
+  final String? gstNumber;
 
   const VendorCreate({
     required this.name,
@@ -32,6 +33,7 @@ class VendorCreate extends VendorEvent {
     this.ifsc,
     this.contactName,
     this.contactPhone,
+    this.gstNumber, 
   });
 
   @override
@@ -51,6 +53,7 @@ class VendorUpdate extends VendorEvent {
   final String? ifsc;
   final String? contactName;
   final String? contactPhone;
+  final String? gstNumber; 
   final bool isActive;
 
   const VendorUpdate({
@@ -62,6 +65,7 @@ class VendorUpdate extends VendorEvent {
     this.ifsc,
     this.contactName,
     this.contactPhone,
+    this.gstNumber,
     required this.isActive,
   });
 
@@ -165,6 +169,7 @@ class VendorBloc extends Bloc<VendorEvent, VendorState> {
         ifsc: event.ifsc,
         contactName: event.contactName,
         contactPhone: event.contactPhone,
+        gstNumber:     event.gstNumber,
       ),
     );
     await result.fold(
@@ -196,6 +201,7 @@ class VendorBloc extends Bloc<VendorEvent, VendorState> {
         ifsc: event.ifsc,
         contactName: event.contactName,
         contactPhone: event.contactPhone,
+        gstNumber:    event.gstNumber,
         isActive: event.isActive,
       ),
     );

@@ -38,15 +38,15 @@ abstract class AdminRepository {
 
   // ── Vendors ──────────────────────────────────────────────
   Future<Either<Failure, List<VendorEntity>>> getVendors();
-  Future<Either<Failure, VendorEntity>> createVendor({
-    required String name,
-    required String pan,
-    String? bankName,
-    String? accountNumber,
-    String? ifsc,
-    String? contactName,
-    String? contactPhone,
-  });
+  Future<Either<Failure, VendorEntity>> createVendor(
+      {required String name,
+      required String pan,
+      String? bankName,
+      String? accountNumber,
+      String? ifsc,
+      String? contactName,
+      String? contactPhone,
+      String? gstNumber});
   Future<Either<Failure, VendorEntity>> updateVendor({
     required String id,
     required String name,
@@ -56,6 +56,7 @@ abstract class AdminRepository {
     String? ifsc,
     String? contactName,
     String? contactPhone,
+    String? gstNumber,
     required bool isActive,
   });
   Future<Either<Failure, Unit>> deleteVendor(String id);

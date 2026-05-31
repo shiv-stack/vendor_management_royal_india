@@ -48,6 +48,7 @@ abstract class AdminRemoteDataSource {
     String? ifsc,
     String? contactName,
     String? contactPhone,
+    String? gstNumber
   });
   Future<VendorModel> updateVendor({
     required String id,
@@ -58,6 +59,7 @@ abstract class AdminRemoteDataSource {
     String? ifsc,
     String? contactName,
     String? contactPhone,
+    String? gstNumber,
     required bool isActive,
   });
   Future<void> deleteVendor(String id);
@@ -271,6 +273,7 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
     String? ifsc,
     String? contactName,
     String? contactPhone,
+    String? gstNumber
   }) async {
     try {
       final data = await supabaseClient
@@ -283,6 +286,7 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
             'ifsc':           ifsc,
             'contact_name':   contactName,
             'contact_phone':  contactPhone,
+            'gst_number':     gstNumber,
             'created_by':     _currentUserId,
           })
           .select()
@@ -304,6 +308,7 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
     String? ifsc,
     String? contactName,
     String? contactPhone,
+    String? gstNumber,
     required bool isActive,
   }) async {
     try {
@@ -317,6 +322,7 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
             'ifsc':           ifsc,
             'contact_name':   contactName,
             'contact_phone':  contactPhone,
+            'gst_number': gstNumber,
             'is_active':      isActive,
           })
           .eq('id', id)

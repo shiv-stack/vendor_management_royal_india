@@ -1,5 +1,7 @@
 // lib/features/expense/data/datasources/expense_remote_datasource.dart
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/supabase_constants.dart';
@@ -7,11 +9,14 @@ import '../../../../core/error/exceptions.dart';
 import '../models/expense_request_model.dart';
 import '../models/payment_model.dart';
 
+
 // ── Abstract contract ─────────────────────────────────────────
 abstract class ExpenseRemoteDataSource {
   // ── File Upload ──────────────────────────────────────────
   Future<String> uploadBillAttachment({
-    required File file,
+    File? file,
+    Uint8List? fileBytes,
+    required String fileExtension,
     required String expenseRequestId,
   });
 
@@ -102,20 +107,40 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
 
   @override
   Future<String> uploadBillAttachment({
-    required File file,
+    File? file,
+    Uint8List? fileBytes,
+    required String fileExtension,
     required String expenseRequestId,
   }) async {
     try {
-      final ext = file.path.split('.').last;
-      final path = '$_uid/$expenseRequestId/bill.$ext';
+      final path = '$_uid/$expenseRequestId/bill.$fileExtension';
 
-      await supabaseClient.storage
-          .from(SupabaseConstants.bucketBillAttachments)
-          .upload(path, file, fileOptions: const FileOptions(upsert: true));
+      if (kIsWeb && fileBytes != null) {
+        // Web: upload from bytes
+        await supabaseClient.storage
+            .from(SupabaseConstants.bucketBillAttachments)
+            .uploadBinary(
+              path,
+              fileBytes,
+              fileOptions: const FileOptions(upsert: true),
+            );
+      } else if (file != null) {
+        // Mobile: upload from file
+        await supabaseClient.storage
+            .from(SupabaseConstants.bucketBillAttachments)
+            .upload(
+              path,
+              file,
+              fileOptions: const FileOptions(upsert: true),
+            );
+      } else {
+        throw const AppStorageException(
+            message: 'No file provided for upload.');
+      }
 
-      final url = supabaseClient.storage
+      final url = await supabaseClient.storage
           .from(SupabaseConstants.bucketBillAttachments)
-          .getPublicUrl(path);
+          .createSignedUrl(path, 3600);
 
       return url;
     } catch (e) {

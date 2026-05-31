@@ -10,6 +10,7 @@ class VendorEntity extends Equatable {
   final String? ifsc;
   final String? contactName;
   final String? contactPhone;
+  final String? gstNumber;
   final bool isActive;
   final String createdBy;
   final String? createdAt;
@@ -24,6 +25,7 @@ class VendorEntity extends Equatable {
     this.ifsc,
     this.contactName,
     this.contactPhone,
+    this.gstNumber,
     this.isActive = true,
     required this.createdBy,
     this.createdAt,
@@ -40,6 +42,7 @@ class VendorEntity extends Equatable {
         ifsc,
         contactName,
         contactPhone,
+        gstNumber,
         isActive,
         createdBy,
         createdAt,

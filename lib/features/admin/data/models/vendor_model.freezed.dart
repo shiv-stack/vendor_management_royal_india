@@ -28,6 +28,7 @@ mixin _$VendorModel {
   String? get ifsc => throw _privateConstructorUsedError;
   String? get contactName => throw _privateConstructorUsedError;
   String? get contactPhone => throw _privateConstructorUsedError;
+  String? get gstNumber => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   String get createdBy => throw _privateConstructorUsedError;
   String? get createdAt => throw _privateConstructorUsedError;
@@ -58,6 +59,7 @@ abstract class $VendorModelCopyWith<$Res> {
       String? ifsc,
       String? contactName,
       String? contactPhone,
+      String? gstNumber,
       bool isActive,
       String createdBy,
       String? createdAt,
@@ -87,6 +89,7 @@ class _$VendorModelCopyWithImpl<$Res, $Val extends VendorModel>
     Object? ifsc = freezed,
     Object? contactName = freezed,
     Object? contactPhone = freezed,
+    Object? gstNumber = freezed,
     Object? isActive = null,
     Object? createdBy = null,
     Object? createdAt = freezed,
@@ -125,6 +128,10 @@ class _$VendorModelCopyWithImpl<$Res, $Val extends VendorModel>
           ? _value.contactPhone
           : contactPhone // ignore: cast_nullable_to_non_nullable
               as String?,
+      gstNumber: freezed == gstNumber
+          ? _value.gstNumber
+          : gstNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
       isActive: null == isActive
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
@@ -162,6 +169,7 @@ abstract class _$$VendorModelImplCopyWith<$Res>
       String? ifsc,
       String? contactName,
       String? contactPhone,
+      String? gstNumber,
       bool isActive,
       String createdBy,
       String? createdAt,
@@ -189,6 +197,7 @@ class __$$VendorModelImplCopyWithImpl<$Res>
     Object? ifsc = freezed,
     Object? contactName = freezed,
     Object? contactPhone = freezed,
+    Object? gstNumber = freezed,
     Object? isActive = null,
     Object? createdBy = null,
     Object? createdAt = freezed,
@@ -227,6 +236,10 @@ class __$$VendorModelImplCopyWithImpl<$Res>
           ? _value.contactPhone
           : contactPhone // ignore: cast_nullable_to_non_nullable
               as String?,
+      gstNumber: freezed == gstNumber
+          ? _value.gstNumber
+          : gstNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
       isActive: null == isActive
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
@@ -259,6 +272,7 @@ class _$VendorModelImpl implements _VendorModel {
       this.ifsc,
       this.contactName,
       this.contactPhone,
+      this.gstNumber,
       this.isActive = true,
       required this.createdBy,
       this.createdAt,
@@ -284,6 +298,8 @@ class _$VendorModelImpl implements _VendorModel {
   @override
   final String? contactPhone;
   @override
+  final String? gstNumber;
+  @override
   @JsonKey()
   final bool isActive;
   @override
@@ -295,7 +311,7 @@ class _$VendorModelImpl implements _VendorModel {
 
   @override
   String toString() {
-    return 'VendorModel(id: $id, name: $name, pan: $pan, bankName: $bankName, accountNumber: $accountNumber, ifsc: $ifsc, contactName: $contactName, contactPhone: $contactPhone, isActive: $isActive, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'VendorModel(id: $id, name: $name, pan: $pan, bankName: $bankName, accountNumber: $accountNumber, ifsc: $ifsc, contactName: $contactName, contactPhone: $contactPhone, gstNumber: $gstNumber, isActive: $isActive, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -315,6 +331,8 @@ class _$VendorModelImpl implements _VendorModel {
                 other.contactName == contactName) &&
             (identical(other.contactPhone, contactPhone) ||
                 other.contactPhone == contactPhone) &&
+            (identical(other.gstNumber, gstNumber) ||
+                other.gstNumber == gstNumber) &&
             (identical(other.isActive, isActive) ||
                 other.isActive == isActive) &&
             (identical(other.createdBy, createdBy) ||
@@ -337,6 +355,7 @@ class _$VendorModelImpl implements _VendorModel {
       ifsc,
       contactName,
       contactPhone,
+      gstNumber,
       isActive,
       createdBy,
       createdAt,
@@ -368,6 +387,7 @@ abstract class _VendorModel implements VendorModel {
       final String? ifsc,
       final String? contactName,
       final String? contactPhone,
+      final String? gstNumber,
       final bool isActive,
       required final String createdBy,
       final String? createdAt,
@@ -392,6 +412,8 @@ abstract class _VendorModel implements VendorModel {
   String? get contactName;
   @override
   String? get contactPhone;
+  @override
+  String? get gstNumber;
   @override
   bool get isActive;
   @override

@@ -1,5 +1,6 @@
 // lib/features/expense/domain/usecases/expense_usecases.dart
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:equatable/equatable.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/error/failures.dart';
@@ -8,8 +9,7 @@ import '../entities/expense_request_entity.dart';
 import '../repositories/expense_repository.dart';
 
 // ── Upload Bill Attachment ────────────────────────────────────
-class UploadBillAttachmentUseCase
-    implements UseCase<String, UploadBillParams> {
+class UploadBillAttachmentUseCase implements UseCase<String, UploadBillParams> {
   final ExpenseRepository repository;
   const UploadBillAttachmentUseCase(this.repository);
 
@@ -17,19 +17,31 @@ class UploadBillAttachmentUseCase
   Future<Either<Failure, String>> call(UploadBillParams params) =>
       repository.uploadBillAttachment(
         file: params.file,
+        fileBytes: params.fileBytes,
+        fileExtension: params.fileExtension,
         expenseRequestId: params.expenseRequestId,
       );
 }
 
 class UploadBillParams extends Equatable {
-  final File file;
+  final File? file;
+  final Uint8List? fileBytes;
+  final String fileExtension;
   final String expenseRequestId;
+
   const UploadBillParams({
-    required this.file,
+    this.file,
+    this.fileBytes,
+    required this.fileExtension,
     required this.expenseRequestId,
   });
+
   @override
-  List<Object> get props => [file.path, expenseRequestId];
+  List<Object?> get props => [
+        file?.path,
+        fileExtension,
+        expenseRequestId,
+      ];
 }
 
 // ── Submit Expense ────────────────────────────────────────────
@@ -40,15 +52,15 @@ class SubmitExpenseUseCase
 
   @override
   Future<Either<Failure, ExpenseRequestEntity>> call(
-      SubmitExpenseParams params) =>
+          SubmitExpenseParams params) =>
       repository.submitExpense(
-        eventId:           params.eventId,
-        expenseTypeId:     params.expenseTypeId,
-        vendorId:          params.vendorId,
-        hodId:             params.hodId,
-        totalAmount:       params.totalAmount,
-        advancePaid:       params.advancePaid,
-        paymentStatus:     params.paymentStatus,
+        eventId: params.eventId,
+        expenseTypeId: params.expenseTypeId,
+        vendorId: params.vendorId,
+        hodId: params.hodId,
+        totalAmount: params.totalAmount,
+        advancePaid: params.advancePaid,
+        paymentStatus: params.paymentStatus,
         billAttachmentUrl: params.billAttachmentUrl,
       );
 }
@@ -95,16 +107,16 @@ class ResubmitExpenseUseCase
 
   @override
   Future<Either<Failure, ExpenseRequestEntity>> call(
-      ResubmitExpenseParams params) =>
+          ResubmitExpenseParams params) =>
       repository.resubmitExpense(
-        expenseRequestId:  params.expenseRequestId,
-        eventId:           params.eventId,
-        expenseTypeId:     params.expenseTypeId,
-        vendorId:          params.vendorId,
-        hodId:             params.hodId,
-        totalAmount:       params.totalAmount,
-        advancePaid:       params.advancePaid,
-        paymentStatus:     params.paymentStatus,
+        expenseRequestId: params.expenseRequestId,
+        eventId: params.eventId,
+        expenseTypeId: params.expenseTypeId,
+        vendorId: params.vendorId,
+        hodId: params.hodId,
+        totalAmount: params.totalAmount,
+        advancePaid: params.advancePaid,
+        paymentStatus: params.paymentStatus,
         billAttachmentUrl: params.billAttachmentUrl,
       );
 }
@@ -169,14 +181,12 @@ class GetAssignedExpensesUseCase
 }
 
 // ── Approve Expense ───────────────────────────────────────────
-class ApproveExpenseUseCase
-    implements UseCase<ExpenseRequestEntity, String> {
+class ApproveExpenseUseCase implements UseCase<ExpenseRequestEntity, String> {
   final ExpenseRepository repository;
   const ApproveExpenseUseCase(this.repository);
 
   @override
-  Future<Either<Failure, ExpenseRequestEntity>> call(
-          String expenseRequestId) =>
+  Future<Either<Failure, ExpenseRequestEntity>> call(String expenseRequestId) =>
       repository.approveExpense(expenseRequestId);
 }
 
@@ -191,7 +201,7 @@ class RejectExpenseUseCase
           RejectExpenseParams params) =>
       repository.rejectExpense(
         expenseRequestId: params.expenseRequestId,
-        rejectionReason:  params.rejectionReason,
+        rejectionReason: params.rejectionReason,
       );
 }
 
@@ -209,14 +219,12 @@ class RejectExpenseParams extends Equatable {
 }
 
 // ── Re-Approve Expense (HOD from RETURNED_TO_HOD) ────────────
-class ReApproveExpenseUseCase
-    implements UseCase<ExpenseRequestEntity, String> {
+class ReApproveExpenseUseCase implements UseCase<ExpenseRequestEntity, String> {
   final ExpenseRepository repository;
   const ReApproveExpenseUseCase(this.repository);
 
   @override
-  Future<Either<Failure, ExpenseRequestEntity>> call(
-          String expenseRequestId) =>
+  Future<Either<Failure, ExpenseRequestEntity>> call(String expenseRequestId) =>
       repository.reApproveExpense(expenseRequestId);
 }
 
@@ -242,7 +250,7 @@ class ReturnToHodUseCase
           ReturnToHodParams params) =>
       repository.returnToHod(
         expenseRequestId: params.expenseRequestId,
-        returnReason:     params.returnReason,
+        returnReason: params.returnReason,
       );
 }
 
@@ -260,8 +268,7 @@ class ReturnToHodParams extends Equatable {
 }
 
 // ── Get HOD List ──────────────────────────────────────────────
-class GetHodListUseCase
-    implements NoParamsUseCase<List<Map<String, dynamic>>> {
+class GetHodListUseCase implements NoParamsUseCase<List<Map<String, dynamic>>> {
   final ExpenseRepository repository;
   const GetHodListUseCase(this.repository);
 
@@ -271,8 +278,7 @@ class GetHodListUseCase
 }
 
 // ── Get MD User ───────────────────────────────────────────────
-class GetMdUserUseCase
-    implements NoParamsUseCase<Map<String, dynamic>?> {
+class GetMdUserUseCase implements NoParamsUseCase<Map<String, dynamic>?> {
   final ExpenseRepository repository;
   const GetMdUserUseCase(this.repository);
 

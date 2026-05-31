@@ -1,5 +1,6 @@
 // lib/features/expense/presentation/bloc/expense_bloc.dart
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -29,7 +30,10 @@ class ExpenseSubmit extends ExpenseEvent {
   final double totalAmount;
   final double advancePaid;
   final ExpensePaymentStatus paymentStatus;
-  final File billFile;
+  final String description;
+  final File? billFile; // mobile
+  final Uint8List? billFileBytes; // web
+  final String billFileExtension;
 
   const ExpenseSubmit({
     required this.eventId,
@@ -39,15 +43,11 @@ class ExpenseSubmit extends ExpenseEvent {
     required this.totalAmount,
     required this.advancePaid,
     required this.paymentStatus,
-    required this.billFile,
+    required this.description,
+    this.billFile,
+    this.billFileBytes,
+    required this.billFileExtension,
   });
-
-  @override
-  List<Object?> get props => [
-        eventId, expenseTypeId, vendorId,
-        hodId, totalAmount, advancePaid,
-        paymentStatus, billFile.path,
-      ];
 }
 
 // Employee resubmits a rejected expense
@@ -60,8 +60,8 @@ class ExpenseResubmit extends ExpenseEvent {
   final double totalAmount;
   final double advancePaid;
   final ExpensePaymentStatus paymentStatus;
-  final File? newBillFile;            // null = keep existing bill
-  final String? existingBillUrl;     // used if no new file
+  final File? newBillFile; // null = keep existing bill
+  final String? existingBillUrl; // used if no new file
 
   const ExpenseResubmit({
     required this.expenseRequestId,
@@ -78,9 +78,14 @@ class ExpenseResubmit extends ExpenseEvent {
 
   @override
   List<Object?> get props => [
-        expenseRequestId, eventId,
-        expenseTypeId, vendorId, hodId,
-        totalAmount, advancePaid, paymentStatus,
+        expenseRequestId,
+        eventId,
+        expenseTypeId,
+        vendorId,
+        hodId,
+        totalAmount,
+        advancePaid,
+        paymentStatus,
       ];
 }
 
@@ -121,8 +126,7 @@ class ExpenseFormReady extends ExpenseState {
   });
 
   @override
-  List<Object?> get props =>
-      [events, expenseTypes, vendors, hodList];
+  List<Object?> get props => [events, expenseTypes, vendors, hodList];
 }
 
 // Employee's request list loaded
@@ -204,10 +208,10 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       );
 
       emit(ExpenseFormReady(
-        events:       results[0],
+        events: results[0],
         expenseTypes: results[1],
-        vendors:      results[2],
-        hodList:      hodList,
+        vendors: results[2],
+        hodList: hodList,
       ));
     } catch (e) {
       emit(ExpenseFailure(message: e.toString()));
@@ -227,6 +231,8 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     final uploadResult = await uploadBill(
       UploadBillParams(
         file: event.billFile,
+        fileBytes: event.billFileBytes,
+        fileExtension: event.billFileExtension,
         expenseRequestId: tempId,
       ),
     );
@@ -242,13 +248,13 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     // Step 2: Submit expense record
     final result = await submitExpense(
       SubmitExpenseParams(
-        eventId:           event.eventId,
-        expenseTypeId:     event.expenseTypeId,
-        vendorId:          event.vendorId,
-        hodId:             event.hodId,
-        totalAmount:       event.totalAmount,
-        advancePaid:       event.advancePaid,
-        paymentStatus:     event.paymentStatus.dbValue,
+        eventId: event.eventId,
+        expenseTypeId: event.expenseTypeId,
+        vendorId: event.vendorId,
+        hodId: event.hodId,
+        totalAmount: event.totalAmount,
+        advancePaid: event.advancePaid,
+        paymentStatus: event.paymentStatus.dbValue,
         billAttachmentUrl: billUrl,
       ),
     );
@@ -273,14 +279,13 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       final uploadResult = await uploadBill(
         UploadBillParams(
           file: event.newBillFile!,
-          expenseRequestId: event.expenseRequestId,
+          expenseRequestId: event.expenseRequestId, fileExtension: '',
         ),
       );
 
       if (uploadResult.isLeft()) {
         emit(ExpenseFailure(
-            message:
-                uploadResult.fold((f) => f.message, (_) => '')));
+            message: uploadResult.fold((f) => f.message, (_) => '')));
         return;
       }
 
@@ -289,14 +294,14 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
     final result = await resubmitExpense(
       ResubmitExpenseParams(
-        expenseRequestId:  event.expenseRequestId,
-        eventId:           event.eventId,
-        expenseTypeId:     event.expenseTypeId,
-        vendorId:          event.vendorId,
-        hodId:             event.hodId,
-        totalAmount:       event.totalAmount,
-        advancePaid:       event.advancePaid,
-        paymentStatus:     event.paymentStatus.dbValue,
+        expenseRequestId: event.expenseRequestId,
+        eventId: event.eventId,
+        expenseTypeId: event.expenseTypeId,
+        vendorId: event.vendorId,
+        hodId: event.hodId,
+        totalAmount: event.totalAmount,
+        advancePaid: event.advancePaid,
+        paymentStatus: event.paymentStatus.dbValue,
         billAttachmentUrl: billUrl,
       ),
     );
@@ -316,8 +321,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     final result = await getEmployeeExpenses();
     result.fold(
       (f) => emit(ExpenseFailure(message: f.message)),
-      (requests) =>
-          emit(ExpenseMyRequestsLoaded(requests: requests)),
+      (requests) => emit(ExpenseMyRequestsLoaded(requests: requests)),
     );
   }
 }

@@ -1,5 +1,6 @@
 // lib/features/expense/domain/repositories/expense_repository.dart
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/error/failures.dart';
 import '../entities/expense_request_entity.dart';
@@ -8,9 +9,11 @@ import '../entities/payment_entity.dart';
 abstract class ExpenseRepository {
   // ── File Upload ──────────────────────────────────────────
   Future<Either<Failure, String>> uploadBillAttachment({
-    required File file,
-    required String expenseRequestId,
-  });
+  File? file,
+  Uint8List? fileBytes,
+  required String fileExtension,
+  required String expenseRequestId,
+});
 
   Future<Either<Failure, String>> uploadPaymentScreenshot({
     required File file,

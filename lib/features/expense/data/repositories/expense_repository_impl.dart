@@ -1,5 +1,6 @@
 // lib/features/expense/data/repositories/expense_repository_impl.dart
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:fpdart/fpdart.dart';
 import 'package:vpms_royal_india/features/expense/data/models/expense_request_model.dart';
 import 'package:vpms_royal_india/features/expense/data/models/payment_model.dart';
@@ -19,12 +20,16 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
   @override
   Future<Either<Failure, String>> uploadBillAttachment({
-    required File file,
+    File? file,
+    Uint8List? fileBytes,
+    required String fileExtension,
     required String expenseRequestId,
   }) async {
     try {
       final url = await remoteDataSource.uploadBillAttachment(
         file: file,
+        fileBytes: fileBytes,
+        fileExtension: fileExtension,
         expenseRequestId: expenseRequestId,
       );
       return Right(url);
@@ -149,8 +154,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   Future<Either<Failure, ExpenseRequestEntity>> approveExpense(
       String expenseRequestId) async {
     try {
-      final model =
-          await remoteDataSource.approveExpense(expenseRequestId);
+      final model = await remoteDataSource.approveExpense(expenseRequestId);
       return Right(model.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
@@ -181,8 +185,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   Future<Either<Failure, ExpenseRequestEntity>> reApproveExpense(
       String expenseRequestId) async {
     try {
-      final model =
-          await remoteDataSource.reApproveExpense(expenseRequestId);
+      final model = await remoteDataSource.reApproveExpense(expenseRequestId);
       return Right(model.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
@@ -194,8 +197,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   // ── Accounts ─────────────────────────────────────────────
 
   @override
-  Future<Either<Failure, List<ExpenseRequestEntity>>>
-      getAccountsQueue() async {
+  Future<Either<Failure, List<ExpenseRequestEntity>>> getAccountsQueue() async {
     try {
       final models = await remoteDataSource.getAccountsQueue();
       return Right(models.map((m) => m.toEntity()).toList());
@@ -251,11 +253,11 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, List<PaymentEntity>>>
-      getPaymentsForExpense(String expenseRequestId) async {
+  Future<Either<Failure, List<PaymentEntity>>> getPaymentsForExpense(
+      String expenseRequestId) async {
     try {
-      final models = await remoteDataSource
-          .getPaymentsForExpense(expenseRequestId);
+      final models =
+          await remoteDataSource.getPaymentsForExpense(expenseRequestId);
       return Right(models.map((m) => m.toEntity()).toList());
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
@@ -267,8 +269,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   // ── Shared ────────────────────────────────────────────────
 
   @override
-  Future<Either<Failure, List<Map<String, dynamic>>>>
-      getHodList() async {
+  Future<Either<Failure, List<Map<String, dynamic>>>> getHodList() async {
     try {
       final list = await remoteDataSource.getHodList();
       return Right(list);
@@ -280,8 +281,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>?>>
-      getMdUser() async {
+  Future<Either<Failure, Map<String, dynamic>?>> getMdUser() async {
     try {
       final md = await remoteDataSource.getMdUser();
       return Right(md);

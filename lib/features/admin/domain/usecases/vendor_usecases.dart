@@ -12,13 +12,11 @@ class GetVendorsUseCase implements NoParamsUseCase<List<VendorEntity>> {
   const GetVendorsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, List<VendorEntity>>> call() =>
-      repository.getVendors();
+  Future<Either<Failure, List<VendorEntity>>> call() => repository.getVendors();
 }
 
 // ── Create Vendor ─────────────────────────────────────────────
-class CreateVendorUseCase
-    implements UseCase<VendorEntity, CreateVendorParams> {
+class CreateVendorUseCase implements UseCase<VendorEntity, CreateVendorParams> {
   final AdminRepository repository;
   const CreateVendorUseCase(this.repository);
 
@@ -32,6 +30,7 @@ class CreateVendorUseCase
         ifsc: params.ifsc,
         contactName: params.contactName,
         contactPhone: params.contactPhone,
+        gstNumber: params.gstNumber,
       );
 }
 
@@ -43,6 +42,7 @@ class CreateVendorParams extends Equatable {
   final String? ifsc;
   final String? contactName;
   final String? contactPhone;
+  final String? gstNumber;
 
   const CreateVendorParams({
     required this.name,
@@ -52,6 +52,7 @@ class CreateVendorParams extends Equatable {
     this.ifsc,
     this.contactName,
     this.contactPhone,
+    this.gstNumber,
   });
 
   @override
@@ -63,12 +64,12 @@ class CreateVendorParams extends Equatable {
         ifsc,
         contactName,
         contactPhone,
+        gstNumber,
       ];
 }
 
 // ── Update Vendor ─────────────────────────────────────────────
-class UpdateVendorUseCase
-    implements UseCase<VendorEntity, UpdateVendorParams> {
+class UpdateVendorUseCase implements UseCase<VendorEntity, UpdateVendorParams> {
   final AdminRepository repository;
   const UpdateVendorUseCase(this.repository);
 
@@ -83,6 +84,7 @@ class UpdateVendorUseCase
         ifsc: params.ifsc,
         contactName: params.contactName,
         contactPhone: params.contactPhone,
+        gstNumber: params.gstNumber,
         isActive: params.isActive,
       );
 }
@@ -96,6 +98,8 @@ class UpdateVendorParams extends Equatable {
   final String? ifsc;
   final String? contactName;
   final String? contactPhone;
+  final String? gstNumber;
+
   final bool isActive;
 
   const UpdateVendorParams({
@@ -107,6 +111,7 @@ class UpdateVendorParams extends Equatable {
     this.ifsc,
     this.contactName,
     this.contactPhone,
+    this.gstNumber,
     required this.isActive,
   });
 
@@ -120,6 +125,7 @@ class UpdateVendorParams extends Equatable {
         ifsc,
         contactName,
         contactPhone,
+        gstNumber,
         isActive,
       ];
 }
@@ -130,6 +136,5 @@ class DeleteVendorUseCase implements UseCase<Unit, String> {
   const DeleteVendorUseCase(this.repository);
 
   @override
-  Future<Either<Failure, Unit>> call(String id) =>
-      repository.deleteVendor(id);
+  Future<Either<Failure, Unit>> call(String id) => repository.deleteVendor(id);
 }

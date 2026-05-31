@@ -174,6 +174,7 @@ class AdminRepositoryImpl implements AdminRepository {
     String? ifsc,
     String? contactName,
     String? contactPhone,
+    String? gstNumber,
   }) async {
     try {
       final model = await remoteDataSource.createVendor(
@@ -184,6 +185,7 @@ class AdminRepositoryImpl implements AdminRepository {
         ifsc: ifsc,
         contactName: contactName,
         contactPhone: contactPhone,
+        gstNumber: gstNumber,
       );
       return Right(model.toEntity());
     } on ServerException catch (e) {
@@ -203,6 +205,7 @@ class AdminRepositoryImpl implements AdminRepository {
     String? ifsc,
     String? contactName,
     String? contactPhone,
+    String? gstNumber,
     required bool isActive,
   }) async {
     try {
@@ -215,6 +218,7 @@ class AdminRepositoryImpl implements AdminRepository {
         ifsc: ifsc,
         contactName: contactName,
         contactPhone: contactPhone,
+        gstNumber: gstNumber,
         isActive: isActive,
       );
       return Right(model.toEntity());

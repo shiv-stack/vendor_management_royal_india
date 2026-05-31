@@ -21,76 +21,75 @@ class _VendorsView extends StatelessWidget {
   const _VendorsView();
 
   void _showDialog(BuildContext context, {VendorEntity? existing}) {
-    final nameCtrl =
-        TextEditingController(text: existing?.name ?? '');
-    final panCtrl =
-        TextEditingController(text: existing?.pan ?? '');
-    final bankCtrl =
-        TextEditingController(text: existing?.bankName ?? '');
-    final accCtrl =
-        TextEditingController(text: existing?.accountNumber ?? '');
-    final ifscCtrl =
-        TextEditingController(text: existing?.ifsc ?? '');
+    final nameCtrl = TextEditingController(text: existing?.name ?? '');
+    final panCtrl = TextEditingController(text: existing?.pan ?? '');
+    final bankCtrl = TextEditingController(text: existing?.bankName ?? '');
+    final accCtrl = TextEditingController(text: existing?.accountNumber ?? '');
+    final ifscCtrl = TextEditingController(text: existing?.ifsc ?? '');
     final contactNameCtrl =
         TextEditingController(text: existing?.contactName ?? '');
     final contactPhoneCtrl =
         TextEditingController(text: existing?.contactPhone ?? '');
     bool isActive = existing?.isActive ?? true;
+    final gstCtrl = TextEditingController(text: existing?.gstNumber ?? '');
 
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setState) => AlertDialog(
-          title: Text(
-              existing == null ? 'Create Vendor' : 'Edit Vendor'),
+          title: Text(existing == null ? 'Create Vendor' : 'Edit Vendor'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'Vendor Name *'),
+                  decoration: const InputDecoration(labelText: 'Vendor Name *'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: panCtrl,
-                  decoration:
-                      const InputDecoration(labelText: 'PAN *'),
+                  decoration: const InputDecoration(labelText: 'PAN *'),
                   textCapitalization: TextCapitalization.characters,
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: bankCtrl,
-                  decoration:
-                      const InputDecoration(labelText: 'Bank Name'),
+                  decoration: const InputDecoration(labelText: 'Bank Name'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: accCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'Account Number'),
+                  decoration:
+                      const InputDecoration(labelText: 'Account Number'),
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: ifscCtrl,
-                  decoration:
-                      const InputDecoration(labelText: 'IFSC Code'),
+                  decoration: const InputDecoration(labelText: 'IFSC Code'),
                   textCapitalization: TextCapitalization.characters,
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: contactNameCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'Contact Person'),
+                  decoration:
+                      const InputDecoration(labelText: 'Contact Person'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: contactPhoneCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'Contact Phone'),
+                  decoration: const InputDecoration(labelText: 'Contact Phone'),
                   keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: gstCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'GST Number',
+                    hintText: 'e.g. 22AAAAA0000A1Z5',
+                  ),
+                  textCapitalization: TextCapitalization.characters,
                 ),
                 if (existing != null) ...[
                   const SizedBox(height: 12),
@@ -111,8 +110,8 @@ class _VendorsView extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                if (nameCtrl.text.trim().isEmpty ||
-                    panCtrl.text.trim().isEmpty) return;
+                if (nameCtrl.text.trim().isEmpty || panCtrl.text.trim().isEmpty)
+                  return;
                 if (existing == null) {
                   context.read<VendorBloc>().add(VendorCreate(
                         name: nameCtrl.text.trim(),
@@ -126,14 +125,15 @@ class _VendorsView extends StatelessWidget {
                         ifsc: ifscCtrl.text.trim().isEmpty
                             ? null
                             : ifscCtrl.text.trim(),
-                        contactName:
-                            contactNameCtrl.text.trim().isEmpty
-                                ? null
-                                : contactNameCtrl.text.trim(),
-                        contactPhone:
-                            contactPhoneCtrl.text.trim().isEmpty
-                                ? null
-                                : contactPhoneCtrl.text.trim(),
+                        contactName: contactNameCtrl.text.trim().isEmpty
+                            ? null
+                            : contactNameCtrl.text.trim(),
+                        contactPhone: contactPhoneCtrl.text.trim().isEmpty
+                            ? null
+                            : contactPhoneCtrl.text.trim(),
+                        gstNumber: gstCtrl.text.trim().isEmpty
+                            ? null
+                            : gstCtrl.text.trim(),
                       ));
                 } else {
                   context.read<VendorBloc>().add(VendorUpdate(
@@ -149,14 +149,12 @@ class _VendorsView extends StatelessWidget {
                         ifsc: ifscCtrl.text.trim().isEmpty
                             ? null
                             : ifscCtrl.text.trim(),
-                        contactName:
-                            contactNameCtrl.text.trim().isEmpty
-                                ? null
-                                : contactNameCtrl.text.trim(),
-                        contactPhone:
-                            contactPhoneCtrl.text.trim().isEmpty
-                                ? null
-                                : contactPhoneCtrl.text.trim(),
+                        contactName: contactNameCtrl.text.trim().isEmpty
+                            ? null
+                            : contactNameCtrl.text.trim(),
+                        contactPhone: contactPhoneCtrl.text.trim().isEmpty
+                            ? null
+                            : contactPhoneCtrl.text.trim(),
                         isActive: isActive,
                       ));
                 }
@@ -175,20 +173,16 @@ class _VendorsView extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Vendor'),
-        content: Text(
-            'Are you sure you want to delete "${vendor.name}"?'),
+        content: Text('Are you sure you want to delete "${vendor.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
-              context
-                  .read<VendorBloc>()
-                  .add(VendorDelete(id: vendor.id));
+              context.read<VendorBloc>().add(VendorDelete(id: vendor.id));
               Navigator.pop(ctx);
             },
             child: const Text('Delete'),
@@ -260,14 +254,13 @@ class _VendorsView extends StatelessWidget {
               return Card(
                 child: ExpansionTile(
                   leading: CircleAvatar(
-                    backgroundColor: const Color(0xFF1565C0)
-                        .withValues(alpha: 0.1),
+                    backgroundColor:
+                        const Color(0xFF1565C0).withValues(alpha: 0.1),
                     child: const Icon(Icons.store_rounded,
                         color: Color(0xFF1565C0)),
                   ),
                   title: Text(vendor.name,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600)),
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
                   subtitle: Text('PAN: ${vendor.pan}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -285,44 +278,39 @@ class _VendorsView extends StatelessWidget {
                           vendor.isActive ? 'Active' : 'Inactive',
                           style: TextStyle(
                             fontSize: 11,
-                            color: vendor.isActive
-                                ? Colors.green
-                                : Colors.red,
+                            color: vendor.isActive ? Colors.green : Colors.red,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.edit_outlined),
-                        onPressed: () =>
-                            _showDialog(context, existing: vendor),
+                        onPressed: () => _showDialog(context, existing: vendor),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline,
-                            color: Colors.red),
-                        onPressed: () =>
-                            _confirmDelete(context, vendor),
+                        icon:
+                            const Icon(Icons.delete_outline, color: Colors.red),
+                        onPressed: () => _confirmDelete(context, vendor),
                       ),
                     ],
                   ),
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                          16, 0, 16, 16),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       child: Column(
                         children: [
                           if (vendor.bankName != null)
                             _InfoRow('Bank', vendor.bankName!),
                           if (vendor.accountNumber != null)
-                            _InfoRow('Account',
-                                vendor.accountNumber!),
+                            _InfoRow('Account', vendor.accountNumber!),
                           if (vendor.ifsc != null)
                             _InfoRow('IFSC', vendor.ifsc!),
                           if (vendor.contactName != null)
-                            _InfoRow(
-                                'Contact', vendor.contactName!),
+                            _InfoRow('Contact', vendor.contactName!),
                           if (vendor.contactPhone != null)
                             _InfoRow('Phone', vendor.contactPhone!),
+                          if (vendor.gstNumber != null)
+                            _InfoRow('GST', vendor.gstNumber!),
                         ],
                       ),
                     ),
@@ -360,8 +348,7 @@ class _InfoRow extends StatelessWidget {
           ),
           Expanded(
               child: Text(value,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500))),
+                  style: const TextStyle(fontWeight: FontWeight.w500))),
         ],
       ),
     );
