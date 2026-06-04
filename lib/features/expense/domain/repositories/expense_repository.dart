@@ -9,11 +9,11 @@ import '../entities/payment_entity.dart';
 abstract class ExpenseRepository {
   // ── File Upload ──────────────────────────────────────────
   Future<Either<Failure, String>> uploadBillAttachment({
-  File? file,
-  Uint8List? fileBytes,
-  required String fileExtension,
-  required String expenseRequestId,
-});
+    File? file,
+    Uint8List? fileBytes,
+    required String fileExtension,
+    required String expenseRequestId,
+  });
 
   Future<Either<Failure, String>> uploadPaymentScreenshot({
     required File file,
@@ -30,6 +30,7 @@ abstract class ExpenseRepository {
     required double advancePaid,
     required String paymentStatus,
     required String billAttachmentUrl,
+    required String description,
   });
 
   Future<Either<Failure, ExpenseRequestEntity>> resubmitExpense({
@@ -42,14 +43,13 @@ abstract class ExpenseRepository {
     required double advancePaid,
     required String paymentStatus,
     required String billAttachmentUrl,
+    required String description,
   });
 
-  Future<Either<Failure, List<ExpenseRequestEntity>>>
-      getEmployeeExpenses();
+  Future<Either<Failure, List<ExpenseRequestEntity>>> getEmployeeExpenses();
 
   // ── HOD / MD ─────────────────────────────────────────────
-  Future<Either<Failure, List<ExpenseRequestEntity>>>
-      getAssignedExpenses();
+  Future<Either<Failure, List<ExpenseRequestEntity>>> getAssignedExpenses();
 
   Future<Either<Failure, ExpenseRequestEntity>> approveExpense(
       String expenseRequestId);
@@ -63,8 +63,7 @@ abstract class ExpenseRepository {
       String expenseRequestId);
 
   // ── Accounts ─────────────────────────────────────────────
-  Future<Either<Failure, List<ExpenseRequestEntity>>>
-      getAccountsQueue();
+  Future<Either<Failure, List<ExpenseRequestEntity>>> getAccountsQueue();
 
   Future<Either<Failure, ExpenseRequestEntity>> returnToHod({
     required String expenseRequestId,

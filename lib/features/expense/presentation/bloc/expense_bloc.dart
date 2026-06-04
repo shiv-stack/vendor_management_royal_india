@@ -60,6 +60,7 @@ class ExpenseResubmit extends ExpenseEvent {
   final double totalAmount;
   final double advancePaid;
   final ExpensePaymentStatus paymentStatus;
+  final String description;
   final File? newBillFile; // null = keep existing bill
   final String? existingBillUrl; // used if no new file
 
@@ -72,6 +73,7 @@ class ExpenseResubmit extends ExpenseEvent {
     required this.totalAmount,
     required this.advancePaid,
     required this.paymentStatus,
+    required this.description,
     this.newBillFile,
     this.existingBillUrl,
   });
@@ -86,6 +88,9 @@ class ExpenseResubmit extends ExpenseEvent {
         totalAmount,
         advancePaid,
         paymentStatus,
+        description,
+        newBillFile,
+        existingBillUrl,
       ];
 }
 
@@ -256,6 +261,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         advancePaid: event.advancePaid,
         paymentStatus: event.paymentStatus.dbValue,
         billAttachmentUrl: billUrl,
+        description: event.description,
       ),
     );
 
@@ -279,7 +285,8 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       final uploadResult = await uploadBill(
         UploadBillParams(
           file: event.newBillFile!,
-          expenseRequestId: event.expenseRequestId, fileExtension: '',
+          expenseRequestId: event.expenseRequestId,
+          fileExtension: '',
         ),
       );
 
@@ -303,6 +310,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         advancePaid: event.advancePaid,
         paymentStatus: event.paymentStatus.dbValue,
         billAttachmentUrl: billUrl,
+        description: event.description,
       ),
     );
 

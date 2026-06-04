@@ -265,6 +265,7 @@ class _SubmitExpenseViewState extends State<_SubmitExpenseView> {
             totalAmount: total,
             advancePaid: advance,
             paymentStatus: _paymentStatus,
+            description:       _descriptionCtrl.text.trim(), 
             newBillFile: _billFile,
           ));
     }
@@ -465,6 +466,34 @@ class _SubmitExpenseViewState extends State<_SubmitExpenseView> {
               );
             }).toList(),
           ),
+
+          //des
+          _SectionLabel('Description of Expense *'),
+          TextFormField(
+            controller: _descriptionCtrl,
+            maxLines: 4,
+            decoration: const InputDecoration(
+              hintText: 'Describe the expense in detail'
+                  ' (minimum 15 words)',
+              alignLabelWithHint: true,
+              border: OutlineInputBorder(),
+            ),
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) {
+                return 'Please enter a description';
+              }
+              final wordCount = v
+                  .trim()
+                  .split(RegExp(r'\s+'))
+                  .where((w) => w.isNotEmpty)
+                  .length;
+              if (wordCount < 15) {
+                return 'Minimum 15 words required ($wordCount entered)';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
 
           const SizedBox(height: 16),
 

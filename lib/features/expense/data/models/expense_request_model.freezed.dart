@@ -33,6 +33,7 @@ mixin _$ExpenseRequestModel {
   String get status => throw _privateConstructorUsedError;
   String? get rejectionReason => throw _privateConstructorUsedError;
   String? get accountsReturnReason => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
   int get resubmissionCount => throw _privateConstructorUsedError;
   String? get createdAt => throw _privateConstructorUsedError;
   String? get updatedAt =>
@@ -73,6 +74,7 @@ abstract class $ExpenseRequestModelCopyWith<$Res> {
       String status,
       String? rejectionReason,
       String? accountsReturnReason,
+      String? description,
       int resubmissionCount,
       String? createdAt,
       String? updatedAt,
@@ -111,6 +113,7 @@ class _$ExpenseRequestModelCopyWithImpl<$Res, $Val extends ExpenseRequestModel>
     Object? status = null,
     Object? rejectionReason = freezed,
     Object? accountsReturnReason = freezed,
+    Object? description = freezed,
     Object? resubmissionCount = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -173,6 +176,10 @@ class _$ExpenseRequestModelCopyWithImpl<$Res, $Val extends ExpenseRequestModel>
           ? _value.accountsReturnReason
           : accountsReturnReason // ignore: cast_nullable_to_non_nullable
               as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
       resubmissionCount: null == resubmissionCount
           ? _value.resubmissionCount
           : resubmissionCount // ignore: cast_nullable_to_non_nullable
@@ -231,6 +238,7 @@ abstract class _$$ExpenseRequestModelImplCopyWith<$Res>
       String status,
       String? rejectionReason,
       String? accountsReturnReason,
+      String? description,
       int resubmissionCount,
       String? createdAt,
       String? updatedAt,
@@ -267,6 +275,7 @@ class __$$ExpenseRequestModelImplCopyWithImpl<$Res>
     Object? status = null,
     Object? rejectionReason = freezed,
     Object? accountsReturnReason = freezed,
+    Object? description = freezed,
     Object? resubmissionCount = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -329,6 +338,10 @@ class __$$ExpenseRequestModelImplCopyWithImpl<$Res>
           ? _value.accountsReturnReason
           : accountsReturnReason // ignore: cast_nullable_to_non_nullable
               as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
       resubmissionCount: null == resubmissionCount
           ? _value.resubmissionCount
           : resubmissionCount // ignore: cast_nullable_to_non_nullable
@@ -382,6 +395,7 @@ class _$ExpenseRequestModelImpl implements _ExpenseRequestModel {
       required this.status,
       this.rejectionReason,
       this.accountsReturnReason,
+      this.description,
       this.resubmissionCount = 0,
       this.createdAt,
       this.updatedAt,
@@ -422,6 +436,8 @@ class _$ExpenseRequestModelImpl implements _ExpenseRequestModel {
   @override
   final String? accountsReturnReason;
   @override
+  final String? description;
+  @override
   @JsonKey()
   final int resubmissionCount;
   @override
@@ -442,7 +458,7 @@ class _$ExpenseRequestModelImpl implements _ExpenseRequestModel {
 
   @override
   String toString() {
-    return 'ExpenseRequestModel(id: $id, eventId: $eventId, expenseTypeId: $expenseTypeId, vendorId: $vendorId, employeeId: $employeeId, hodId: $hodId, totalAmount: $totalAmount, advancePaid: $advancePaid, paymentStatus: $paymentStatus, billAttachmentUrl: $billAttachmentUrl, status: $status, rejectionReason: $rejectionReason, accountsReturnReason: $accountsReturnReason, resubmissionCount: $resubmissionCount, createdAt: $createdAt, updatedAt: $updatedAt, eventName: $eventName, expenseTypeName: $expenseTypeName, vendorName: $vendorName, employeeName: $employeeName, hodName: $hodName)';
+    return 'ExpenseRequestModel(id: $id, eventId: $eventId, expenseTypeId: $expenseTypeId, vendorId: $vendorId, employeeId: $employeeId, hodId: $hodId, totalAmount: $totalAmount, advancePaid: $advancePaid, paymentStatus: $paymentStatus, billAttachmentUrl: $billAttachmentUrl, status: $status, rejectionReason: $rejectionReason, accountsReturnReason: $accountsReturnReason, description: $description, resubmissionCount: $resubmissionCount, createdAt: $createdAt, updatedAt: $updatedAt, eventName: $eventName, expenseTypeName: $expenseTypeName, vendorName: $vendorName, employeeName: $employeeName, hodName: $hodName)';
   }
 
   @override
@@ -472,6 +488,8 @@ class _$ExpenseRequestModelImpl implements _ExpenseRequestModel {
                 other.rejectionReason == rejectionReason) &&
             (identical(other.accountsReturnReason, accountsReturnReason) ||
                 other.accountsReturnReason == accountsReturnReason) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
             (identical(other.resubmissionCount, resubmissionCount) ||
                 other.resubmissionCount == resubmissionCount) &&
             (identical(other.createdAt, createdAt) ||
@@ -506,6 +524,7 @@ class _$ExpenseRequestModelImpl implements _ExpenseRequestModel {
         status,
         rejectionReason,
         accountsReturnReason,
+        description,
         resubmissionCount,
         createdAt,
         updatedAt,
@@ -548,6 +567,7 @@ abstract class _ExpenseRequestModel implements ExpenseRequestModel {
       required final String status,
       final String? rejectionReason,
       final String? accountsReturnReason,
+      final String? description,
       final int resubmissionCount,
       final String? createdAt,
       final String? updatedAt,
@@ -586,6 +606,8 @@ abstract class _ExpenseRequestModel implements ExpenseRequestModel {
   String? get rejectionReason;
   @override
   String? get accountsReturnReason;
+  @override
+  String? get description;
   @override
   int get resubmissionCount;
   @override

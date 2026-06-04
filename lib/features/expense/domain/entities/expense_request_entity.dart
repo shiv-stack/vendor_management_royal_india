@@ -16,6 +16,7 @@ class ExpenseRequestEntity extends Equatable {
   final ExpenseStatus status;
   final String? rejectionReason;
   final String? accountsReturnReason;
+  final String? description;
   final int resubmissionCount;
   final String? createdAt;
   final String? updatedAt;
@@ -41,6 +42,7 @@ class ExpenseRequestEntity extends Equatable {
     required this.status,
     this.rejectionReason,
     this.accountsReturnReason,
+    this.description,
     this.resubmissionCount = 0,
     this.createdAt,
     this.updatedAt,
@@ -91,6 +93,7 @@ class ExpenseRequestEntity extends Equatable {
         status,
         rejectionReason,
         accountsReturnReason,
+        description,
         resubmissionCount,
         createdAt,
         updatedAt,

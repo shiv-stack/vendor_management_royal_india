@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../injection_container.dart'; 
+import '../../../../../injection_container.dart';
 import '../../bloc/approval_bloc.dart';
 import '../../../../../features/expense/domain/entities/expense_request_entity.dart';
 
@@ -239,6 +239,8 @@ class _HodReviewView extends StatelessWidget {
                           _InfoRow('Advance Paid', fmt.format(req.advancePaid)),
                         _InfoRow('Net Payable', fmt.format(req.netPayable)),
                         _InfoRow('Bill Status', req.paymentStatus.label),
+                        if (req.description != null)
+                          _InfoRow('Description', req.description!),
                         const SizedBox(height: 8),
                         SizedBox(
                           width: double.infinity,

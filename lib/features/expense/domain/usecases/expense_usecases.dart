@@ -62,6 +62,7 @@ class SubmitExpenseUseCase
         advancePaid: params.advancePaid,
         paymentStatus: params.paymentStatus,
         billAttachmentUrl: params.billAttachmentUrl,
+        description: params.description,
       );
 }
 
@@ -74,6 +75,7 @@ class SubmitExpenseParams extends Equatable {
   final double advancePaid;
   final String paymentStatus;
   final String billAttachmentUrl;
+  final String description;
 
   const SubmitExpenseParams({
     required this.eventId,
@@ -84,6 +86,7 @@ class SubmitExpenseParams extends Equatable {
     required this.advancePaid,
     required this.paymentStatus,
     required this.billAttachmentUrl,
+    required this.description,
   });
 
   @override
@@ -96,6 +99,7 @@ class SubmitExpenseParams extends Equatable {
         advancePaid,
         paymentStatus,
         billAttachmentUrl,
+        description,
       ];
 }
 
@@ -118,6 +122,7 @@ class ResubmitExpenseUseCase
         advancePaid: params.advancePaid,
         paymentStatus: params.paymentStatus,
         billAttachmentUrl: params.billAttachmentUrl,
+        description: params.description,
       );
 }
 
@@ -131,8 +136,10 @@ class ResubmitExpenseParams extends Equatable {
   final double advancePaid;
   final String paymentStatus;
   final String billAttachmentUrl;
+  final String description;
 
-  const ResubmitExpenseParams({
+  const ResubmitExpenseParams(
+    {
     required this.expenseRequestId,
     required this.eventId,
     required this.expenseTypeId,
@@ -142,6 +149,7 @@ class ResubmitExpenseParams extends Equatable {
     required this.advancePaid,
     required this.paymentStatus,
     required this.billAttachmentUrl,
+    required this.description,
   });
 
   @override
@@ -155,6 +163,7 @@ class ResubmitExpenseParams extends Equatable {
         advancePaid,
         paymentStatus,
         billAttachmentUrl,
+        description,
       ];
 }
 

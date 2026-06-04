@@ -35,6 +35,7 @@ abstract class ExpenseRemoteDataSource {
     required double advancePaid,
     required String paymentStatus,
     required String billAttachmentUrl,
+    String? description,
   });
 
   Future<ExpenseRequestModel> resubmitExpense({
@@ -47,6 +48,7 @@ abstract class ExpenseRemoteDataSource {
     required double advancePaid,
     required String paymentStatus,
     required String billAttachmentUrl,
+    String? description,
   });
 
   Future<List<ExpenseRequestModel>> getEmployeeExpenses();
@@ -185,6 +187,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     required double advancePaid,
     required String paymentStatus,
     required String billAttachmentUrl,
+    String? description,
   }) async {
     try {
       final data = await supabaseClient
@@ -199,6 +202,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
             'advance_paid': advancePaid,
             'payment_status': paymentStatus,
             'bill_attachment_url': billAttachmentUrl,
+            'description': description,
             'status': 'PENDING_HOD',
           })
           .select()
@@ -221,6 +225,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     required double advancePaid,
     required String paymentStatus,
     required String billAttachmentUrl,
+    String? description,
   }) async {
     try {
       // Get current resubmission count first
@@ -243,6 +248,7 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
             'advance_paid': advancePaid,
             'payment_status': paymentStatus,
             'bill_attachment_url': billAttachmentUrl,
+            'description': description,
             'status': 'PENDING_HOD',
             'rejection_reason': null,
             'resubmission_count': count,

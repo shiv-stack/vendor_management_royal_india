@@ -366,6 +366,8 @@ class _AccountsPaymentView extends StatelessWidget {
                         _InfoRow('Total', fmt.format(req.totalAmount)),
                         _InfoRow('Advance', fmt.format(req.advancePaid)),
                         _InfoRow('Net Payable', fmt.format(req.netPayable)),
+                        if (req.description != null)
+                          _InfoRow('Description', req.description!),
                         const SizedBox(height: 8),
                         SizedBox(
                           width: double.infinity,

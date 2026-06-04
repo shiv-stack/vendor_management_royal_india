@@ -70,6 +70,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     required double advancePaid,
     required String paymentStatus,
     required String billAttachmentUrl,
+    String? description,
   }) async {
     try {
       final model = await remoteDataSource.submitExpense(
@@ -81,6 +82,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         advancePaid: advancePaid,
         paymentStatus: paymentStatus,
         billAttachmentUrl: billAttachmentUrl,
+        description: description,
       );
       return Right(model.toEntity());
     } on ServerException catch (e) {
@@ -101,6 +103,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     required double advancePaid,
     required String paymentStatus,
     required String billAttachmentUrl,
+    String? description,
   }) async {
     try {
       final model = await remoteDataSource.resubmitExpense(
@@ -113,6 +116,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         advancePaid: advancePaid,
         paymentStatus: paymentStatus,
         billAttachmentUrl: billAttachmentUrl,
+        description: description,
       );
       return Right(model.toEntity());
     } on ServerException catch (e) {
