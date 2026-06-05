@@ -9,7 +9,6 @@ import '../../../../core/error/exceptions.dart';
 import '../models/expense_request_model.dart';
 import '../models/payment_model.dart';
 
-
 // ── Abstract contract ─────────────────────────────────────────
 abstract class ExpenseRemoteDataSource {
   // ── File Upload ──────────────────────────────────────────
@@ -140,9 +139,9 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
             message: 'No file provided for upload.');
       }
 
-      final url = await supabaseClient.storage
+      final url = supabaseClient.storage
           .from(SupabaseConstants.bucketBillAttachments)
-          .createSignedUrl(path, 3600);
+          .getPublicUrl(path);
 
       return url;
     } catch (e) {
