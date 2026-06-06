@@ -13,6 +13,8 @@ import '../../features/admin/presentation/pages/events_page.dart';
 import '../../features/admin/presentation/pages/expense_types_page.dart';
 import '../../features/admin/presentation/pages/vendors_page.dart';
 import '../../features/admin/presentation/pages/users_page.dart';
+import '../../features/expense/presentation/pages/hod/hod_home_page.dart';
+import '../../features/expense/presentation/pages/accounts/accounts_home_page.dart';
 
 // Route name constants — use these everywhere, never raw strings
 class AppRoutes {
@@ -94,17 +96,17 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.hodHome,
         name: 'hod-home',
-        builder: (context, state) => const HodReviewPage(),
+        builder: (context, state) => const HodHomePage(),
       ),
       GoRoute(
         path: AppRoutes.mdHome,
         name: 'md-home',
-        builder: (context, state) => const HodReviewPage(),
+        builder: (context, state) => const HodHomePage(),
       ),
       GoRoute(
         path: AppRoutes.accountsHome,
         name: 'accounts-home',
-        builder: (context, state) => const AccountsPaymentPage(),
+        builder: (context, state) => const AccountsHomePage(),
       ),
     ],
   );

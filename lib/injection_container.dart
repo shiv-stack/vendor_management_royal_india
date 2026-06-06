@@ -18,6 +18,11 @@ import 'package:vpms_royal_india/features/admin/presentation/bloc/event_bloc.dar
 import 'package:vpms_royal_india/features/admin/presentation/bloc/expense_type_bloc.dart';
 import 'package:vpms_royal_india/features/admin/presentation/bloc/user_management_bloc.dart';
 import 'package:vpms_royal_india/features/admin/presentation/bloc/vendor_bloc.dart';
+import 'package:vpms_royal_india/features/dashboard/data/datasources/dashboard_remote_datasource.dart';
+import 'package:vpms_royal_india/features/dashboard/data/repositories/dashboard_repository_impl.dart';
+import 'package:vpms_royal_india/features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'package:vpms_royal_india/features/dashboard/domain/usecases/dashboard_usecases.dart';
+import 'package:vpms_royal_india/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:vpms_royal_india/features/expense/data/datasources/expense_remote_datasource.dart';
 import 'package:vpms_royal_india/features/expense/data/repositories/expense_repository_impl.dart';
 import 'package:vpms_royal_india/features/expense/domain/repositories/expense_repository.dart';
@@ -55,7 +60,28 @@ Future<void> init() async {
   // _registerPayments();
 
   // ── Phase 5 will add: ─────────────────────────────────────
-  // _registerDashboard();
+  _registerDashboard();
+}
+
+void _registerDashboard() {
+  // DataSource
+  sl.registerLazySingleton<DashboardRemoteDataSource>(
+    () => DashboardRemoteDataSourceImpl(supabaseClient: sl()),
+  );
+
+  // Repository
+  sl.registerLazySingleton<DashboardRepository>(
+    () => DashboardRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerFactory(() => DashboardBloc(
+        getEventSummaries: sl(),
+        getExpenseDetails: sl(),
+      ));
+
+  // UseCases
+  sl.registerLazySingleton(() => GetEventSummariesUseCase(sl()));
+  sl.registerLazySingleton(() => GetExpenseDetailsUseCase(sl()));
 }
 
 void _registerAuth() {
