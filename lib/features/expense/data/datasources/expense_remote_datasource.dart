@@ -20,7 +20,9 @@ abstract class ExpenseRemoteDataSource {
   });
 
   Future<String> uploadPaymentScreenshot({
-    required File file,
+    File? file,
+    Uint8List? fileBytes,
+    required String fileExtension,
     required String paymentId,
   });
 
@@ -151,16 +153,32 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
 
   @override
   Future<String> uploadPaymentScreenshot({
-    required File file,
+    File? file,
+    Uint8List? fileBytes,
+    required String fileExtension,
     required String paymentId,
   }) async {
     try {
-      final ext = file.path.split('.').last;
-      final path = '$_uid/$paymentId/screenshot.$ext';
+      final path = '$_uid/$paymentId/screenshot.$fileExtension';
 
-      await supabaseClient.storage
-          .from(SupabaseConstants.bucketPaymentScreenshots)
-          .upload(path, file, fileOptions: const FileOptions(upsert: true));
+      if (kIsWeb && fileBytes != null) {
+        // Web: upload from bytes
+        await supabaseClient.storage
+            .from(SupabaseConstants.bucketPaymentScreenshots)
+            .uploadBinary(
+              path,
+              fileBytes,
+              fileOptions: const FileOptions(upsert: true),
+            );
+      } else if (file != null) {
+        // Mobile: upload from file
+        await supabaseClient.storage
+            .from(SupabaseConstants.bucketPaymentScreenshots)
+            .upload(path, file, fileOptions: const FileOptions(upsert: true));
+      } else {
+        throw const AppStorageException(
+            message: 'No file provided for screenshot upload.');
+      }
 
       final url = supabaseClient.storage
           .from(SupabaseConstants.bucketPaymentScreenshots)

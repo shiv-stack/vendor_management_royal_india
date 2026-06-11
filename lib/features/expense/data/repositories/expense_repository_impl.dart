@@ -42,12 +42,16 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
   @override
   Future<Either<Failure, String>> uploadPaymentScreenshot({
-    required File file,
+    File? file,
+    Uint8List? fileBytes,
+    required String fileExtension,
     required String paymentId,
   }) async {
     try {
       final url = await remoteDataSource.uploadPaymentScreenshot(
         file: file,
+        fileBytes: fileBytes,
+        fileExtension: fileExtension,
         paymentId: paymentId,
       );
       return Right(url);

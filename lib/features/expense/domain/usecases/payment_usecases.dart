@@ -1,5 +1,6 @@
 // lib/features/expense/domain/usecases/payment_usecases.dart
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:equatable/equatable.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/error/failures.dart';
@@ -17,20 +18,26 @@ class UploadPaymentScreenshotUseCase
   Future<Either<Failure, String>> call(
           UploadScreenshotParams params) =>
       repository.uploadPaymentScreenshot(
-        file:      params.file,
-        paymentId: params.paymentId,
+        file:          params.file,
+        fileBytes:     params.fileBytes,
+        fileExtension: params.fileExtension,
+        paymentId:     params.paymentId,
       );
 }
 
 class UploadScreenshotParams extends Equatable {
-  final File file;
+  final File? file;
+  final Uint8List? fileBytes;
+  final String fileExtension;
   final String paymentId;
   const UploadScreenshotParams({
-    required this.file,
+    this.file,
+    this.fileBytes,
+    required this.fileExtension,
     required this.paymentId,
   });
   @override
-  List<Object> get props => [file.path, paymentId];
+  List<Object?> get props => [file?.path, paymentId, fileExtension];
 }
 
 // ── Process Payment ───────────────────────────────────────────

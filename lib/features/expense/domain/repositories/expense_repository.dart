@@ -16,7 +16,9 @@ abstract class ExpenseRepository {
   });
 
   Future<Either<Failure, String>> uploadPaymentScreenshot({
-    required File file,
+    File? file,
+    Uint8List? fileBytes,
+    required String fileExtension,
     required String paymentId,
   });
 

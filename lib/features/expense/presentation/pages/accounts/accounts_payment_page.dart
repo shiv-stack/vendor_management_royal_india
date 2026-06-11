@@ -1,5 +1,7 @@
 // lib/features/expense/presentation/pages/accounts/accounts_payment_page.dart
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
@@ -39,7 +41,12 @@ class _AccountsPaymentView extends StatelessWidget {
     final remarksCtrl = TextEditingController();
     PaymentType selectedType = PaymentType.full;
     PaymentMode selectedMode = PaymentMode.bank1;
+    // Mobile
     File? screenshotFile;
+    // Web
+    Uint8List? screenshotBytes;
+    String? screenshotExtension;
+    String? screenshotName;
 
     showDialog(
       context: context,
@@ -118,32 +125,52 @@ class _AccountsPaymentView extends StatelessWidget {
                     final result = await FilePicker.platform.pickFiles(
                       type: FileType.custom,
                       allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+                      withData: kIsWeb, // fetch bytes on web
                     );
-                    if (result != null && result.files.single.path != null) {
-                      setState(() {
-                        screenshotFile = File(result.files.single.path!);
-                      });
+                    if (result != null && result.files.isNotEmpty) {
+                      final picked = result.files.single;
+                      if (kIsWeb) {
+                        // Web: use bytes, no file path available
+                        if (picked.bytes != null) {
+                          setState(() {
+                            screenshotBytes = picked.bytes;
+                            screenshotExtension =
+                                picked.extension?.toLowerCase() ?? 'jpg';
+                            screenshotName = picked.name;
+                          });
+                        }
+                      } else {
+                        // Mobile/Desktop: use File path
+                        if (picked.path != null) {
+                          setState(() {
+                            screenshotFile = File(picked.path!);
+                            screenshotBytes = null;
+                            screenshotName = null;
+                          });
+                        }
+                      }
                     }
                   },
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color:
-                            screenshotFile != null ? Colors.green : Colors.grey,
+                        color: (screenshotFile != null || screenshotBytes != null)
+                            ? Colors.green
+                            : Colors.grey,
                       ),
                       borderRadius: BorderRadius.circular(8),
-                      color: screenshotFile != null
+                      color: (screenshotFile != null || screenshotBytes != null)
                           ? Colors.green.withValues(alpha: 0.05)
                           : null,
                     ),
                     child: Row(
                       children: [
                         Icon(
-                          screenshotFile != null
+                          (screenshotFile != null || screenshotBytes != null)
                               ? Icons.check_circle_rounded
                               : Icons.screenshot_monitor,
-                          color: screenshotFile != null
+                          color: (screenshotFile != null || screenshotBytes != null)
                               ? Colors.green
                               : Colors.grey,
                         ),
@@ -152,10 +179,13 @@ class _AccountsPaymentView extends StatelessWidget {
                           child: Text(
                             screenshotFile != null
                                 ? screenshotFile!.path.split('/').last
-                                : 'Upload payment screenshot *',
+                                : screenshotName != null
+                                    ? screenshotName!
+                                    : 'Upload payment screenshot *',
                             style: TextStyle(
                               fontSize: 13,
-                              color: screenshotFile != null
+                              color: (screenshotFile != null ||
+                                      screenshotBytes != null)
                                   ? Colors.green
                                   : Colors.grey,
                             ),
@@ -177,7 +207,10 @@ class _AccountsPaymentView extends StatelessWidget {
               onPressed: () {
                 final amount = double.tryParse(amountCtrl.text.trim());
                 if (amount == null || amount <= 0) return;
-                if (screenshotFile == null) return;
+                // Require either a file (mobile) or bytes (web)
+                final hasScreenshot =
+                    screenshotFile != null || screenshotBytes != null;
+                if (!hasScreenshot) return;
 
                 context.read<ApprovalBloc>().add(
                       ApprovalProcessPayment(
@@ -185,7 +218,11 @@ class _AccountsPaymentView extends StatelessWidget {
                         amount: amount,
                         paymentType: selectedType.dbValue,
                         paymentMode: selectedMode.dbValue,
-                        screenshotFile: screenshotFile!,
+                        screenshotFile: screenshotFile,
+                        screenshotBytes: screenshotBytes,
+                        screenshotExtension:
+                            screenshotExtension ??
+                            (screenshotFile?.path.split('.').last ?? 'jpg'),
                         remarks: remarksCtrl.text.trim().isEmpty
                             ? null
                             : remarksCtrl.text.trim(),

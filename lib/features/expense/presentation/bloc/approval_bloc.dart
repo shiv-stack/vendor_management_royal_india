@@ -1,11 +1,12 @@
 // lib/features/expense/presentation/bloc/approval_bloc.dart
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/expense_request_entity.dart';
 import '../../domain/entities/payment_entity.dart';
 import '../../domain/usecases/expense_usecases.dart';
 import '../../domain/usecases/payment_usecases.dart';
-import 'dart:io';
 
 // ══════════════════════════════════════════════════════════════
 // EVENTS
@@ -72,7 +73,11 @@ class ApprovalProcessPayment extends ApprovalEvent {
   final double amount;
   final String paymentType;
   final String paymentMode;
-  final File screenshotFile;
+  // Mobile
+  final File? screenshotFile;
+  // Web
+  final Uint8List? screenshotBytes;
+  final String screenshotExtension;
   final String? remarks;
 
   const ApprovalProcessPayment({
@@ -80,7 +85,9 @@ class ApprovalProcessPayment extends ApprovalEvent {
     required this.amount,
     required this.paymentType,
     required this.paymentMode,
-    required this.screenshotFile,
+    required this.screenshotExtension,
+    this.screenshotFile,
+    this.screenshotBytes,
     this.remarks,
   });
 
@@ -88,7 +95,7 @@ class ApprovalProcessPayment extends ApprovalEvent {
   List<Object?> get props => [
         expenseRequestId, amount,
         paymentType, paymentMode,
-        screenshotFile.path, remarks,
+        screenshotFile?.path, screenshotExtension, remarks,
       ];
 }
 
@@ -320,7 +327,7 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
     );
   }
 
-  // ── Process Payment ───────────────────────────────────────
+  // ── Process Payment ───────────────────────────────────────────
   Future<void> _onProcessPayment(
     ApprovalProcessPayment event,
     Emitter<ApprovalState> emit,
@@ -331,8 +338,10 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
     final tempId = DateTime.now().millisecondsSinceEpoch.toString();
     final uploadResult = await uploadScreenshot(
       UploadScreenshotParams(
-        file:      event.screenshotFile,
-        paymentId: tempId,
+        file:          event.screenshotFile,
+        fileBytes:     event.screenshotBytes,
+        fileExtension: event.screenshotExtension,
+        paymentId:     tempId,
       ),
     );
 
