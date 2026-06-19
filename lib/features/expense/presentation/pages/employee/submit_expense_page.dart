@@ -474,7 +474,7 @@ class _SubmitExpenseViewState extends State<_SubmitExpenseView> {
             maxLines: 4,
             decoration: const InputDecoration(
               hintText: 'Describe the expense in detail'
-                  ' (minimum 15 words)',
+                  ' (minimum 4 words)',
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
             ),
@@ -487,8 +487,8 @@ class _SubmitExpenseViewState extends State<_SubmitExpenseView> {
                   .split(RegExp(r'\s+'))
                   .where((w) => w.isNotEmpty)
                   .length;
-              if (wordCount < 15) {
-                return 'Minimum 15 words required ($wordCount entered)';
+              if (wordCount < 4) {
+                return 'Minimum 4 words required ($wordCount entered)';
               }
               return null;
             },
