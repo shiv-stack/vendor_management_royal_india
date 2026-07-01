@@ -57,6 +57,8 @@ abstract class ExpenseRemoteDataSource {
   // ── HOD / MD ─────────────────────────────────────────────
   Future<List<ExpenseRequestModel>> getAssignedExpenses();
 
+  Future<List<ExpenseRequestModel>> getHodHistoryExpenses();
+
   Future<ExpenseRequestModel> approveExpense(String expenseRequestId);
 
   Future<ExpenseRequestModel> rejectExpense({
@@ -398,6 +400,35 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
           .single();
 
       return ExpenseRequestModelX.fromSupabase(data);
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<List<ExpenseRequestModel>> getHodHistoryExpenses() async {
+    try {
+      final data = await supabaseClient
+          .from(SupabaseConstants.tableExpenseRequests)
+          .select('''
+            *,
+            events!event_id(name),
+            expense_types!expense_type_id(name),
+            vendors!vendor_id(name),
+            employee:profiles!employee_id(full_name)
+          ''')
+          .eq('hod_id', _uid)
+          .inFilter('status', ['PARTIALLY_PAID', 'PAID'])
+          .order('created_at', ascending: false);
+
+      return (data as List).map((e) {
+        final map = Map<String, dynamic>.from(e);
+        map['event_name'] = (e['events'] as Map?)?['name'];
+        map['expense_type_name'] = (e['expense_types'] as Map?)?['name'];
+        map['vendor_name'] = (e['vendors'] as Map?)?['name'];
+        map['employee_name'] = (e['employee'] as Map?)?['full_name'];
+        return ExpenseRequestModelX.fromSupabase(map);
+      }).toList();
     } catch (e) {
       throw ServerException(message: e.toString());
     }

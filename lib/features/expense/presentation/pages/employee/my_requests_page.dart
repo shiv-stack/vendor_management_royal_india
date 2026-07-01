@@ -11,6 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../features/expense/domain/entities/expense_request_entity.dart';
 import 'submit_expense_page.dart';
+import '../../../../../shared/widgets/payment_proof_sheet.dart';
 
 class MyRequestsPage extends StatelessWidget {
   const MyRequestsPage({super.key});
@@ -222,6 +223,27 @@ class _MyRequestsView extends StatelessWidget {
                               },
                               icon: const Icon(Icons.refresh_rounded),
                               label: const Text('Resubmit'),
+                            ),
+                          ),
+                        ],
+
+                        // View Payment Proof button
+                        if (req.isPartiallyPaid || req.isPaid) ...[
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () =>
+                                  showPaymentProofSheet(context, req.id),
+                              icon: const Icon(
+                                  Icons.payment_rounded,
+                                  size: 18),
+                              label: const Text('View Payment Proof'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.teal,
+                                side:
+                                    const BorderSide(color: Colors.teal),
+                              ),
                             ),
                           ),
                         ],

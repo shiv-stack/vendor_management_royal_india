@@ -159,6 +159,19 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
+  Future<Either<Failure, List<ExpenseRequestEntity>>>
+      getHodHistoryExpenses() async {
+    try {
+      final models = await remoteDataSource.getHodHistoryExpenses();
+      return Right(models.map((m) => m.toEntity()).toList());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, ExpenseRequestEntity>> approveExpense(
       String expenseRequestId) async {
     try {

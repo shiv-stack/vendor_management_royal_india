@@ -192,6 +192,7 @@ void _registerExpense() {
   sl.registerLazySingleton(() => UploadPaymentScreenshotUseCase(sl()));
   sl.registerLazySingleton(() => ProcessPaymentUseCase(sl()));
   sl.registerLazySingleton(() => GetPaymentsForExpenseUseCase(sl()));
+  sl.registerLazySingleton(() => GetHodHistoryExpensesUseCase(sl()));
 
 // Add inside _registerExpense() after usecases:
 
@@ -251,5 +252,6 @@ void _registerExpense() {
         processPayment: sl(),
         uploadScreenshot: sl(),
         getPayments: sl(),
+        getHodHistoryExpenses: sl(),
       ));
 }

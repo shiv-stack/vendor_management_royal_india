@@ -107,6 +107,11 @@ class ApprovalLoadPayments extends ApprovalEvent {
   List<Object> get props => [expenseRequestId];
 }
 
+// HOD loads paid/partially-paid history
+class ApprovalLoadHodHistory extends ApprovalEvent {
+  const ApprovalLoadHodHistory();
+}
+
 // ══════════════════════════════════════════════════════════════
 // STATES
 // ══════════════════════════════════════════════════════════════
@@ -156,6 +161,14 @@ class ApprovalPaymentsLoaded extends ApprovalState {
   List<Object> get props => [payments];
 }
 
+// HOD history (PARTIALLY_PAID / PAID) loaded
+class ApprovalHodHistoryLoaded extends ApprovalState {
+  final List<ExpenseRequestEntity> requests;
+  const ApprovalHodHistoryLoaded({required this.requests});
+  @override
+  List<Object> get props => [requests];
+}
+
 class ApprovalFailure extends ApprovalState {
   final String message;
   const ApprovalFailure({required this.message});
@@ -176,6 +189,7 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
   final ProcessPaymentUseCase processPayment;
   final UploadPaymentScreenshotUseCase uploadScreenshot;
   final GetPaymentsForExpenseUseCase getPayments;
+  final GetHodHistoryExpensesUseCase getHodHistoryExpenses;
 
   ApprovalBloc({
     required this.getAssignedExpenses,
@@ -187,6 +201,7 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
     required this.processPayment,
     required this.uploadScreenshot,
     required this.getPayments,
+    required this.getHodHistoryExpenses,
   }) : super(const ApprovalInitial()) {
     on<ApprovalLoadQueue>(_onLoadQueue);
     on<ApprovalApprove>(_onApprove);
@@ -196,6 +211,7 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
     on<ApprovalReturnToHod>(_onReturnToHod);
     on<ApprovalProcessPayment>(_onProcessPayment);
     on<ApprovalLoadPayments>(_onLoadPayments);
+    on<ApprovalLoadHodHistory>(_onLoadHodHistory);
   }
 
   // ── HOD/MD queue ──────────────────────────────────────────
@@ -397,4 +413,18 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
           emit(ApprovalPaymentsLoaded(payments: payments)),
     );
   }
-}
+
+  // ── Load HOD history (PARTIALLY_PAID / PAID) ──────────────
+  Future<void> _onLoadHodHistory(
+    ApprovalLoadHodHistory event,
+    Emitter<ApprovalState> emit,
+  ) async {
+    emit(const ApprovalLoading());
+    final result = await getHodHistoryExpenses();
+    result.fold(
+      (f) => emit(ApprovalFailure(message: f.message)),
+      (requests) =>
+          emit(ApprovalHodHistoryLoaded(requests: requests)),
+    );
+  }
+}

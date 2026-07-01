@@ -53,6 +53,8 @@ abstract class ExpenseRepository {
   // ── HOD / MD ─────────────────────────────────────────────
   Future<Either<Failure, List<ExpenseRequestEntity>>> getAssignedExpenses();
 
+  Future<Either<Failure, List<ExpenseRequestEntity>>> getHodHistoryExpenses();
+
   Future<Either<Failure, ExpenseRequestEntity>> approveExpense(
       String expenseRequestId);
 

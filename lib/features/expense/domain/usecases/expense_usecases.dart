@@ -189,6 +189,17 @@ class GetAssignedExpensesUseCase
       repository.getAssignedExpenses();
 }
 
+// ── Get HOD History Expenses (PARTIALLY_PAID / PAID) ──────────
+class GetHodHistoryExpensesUseCase
+    implements NoParamsUseCase<List<ExpenseRequestEntity>> {
+  final ExpenseRepository repository;
+  const GetHodHistoryExpensesUseCase(this.repository);
+
+  @override
+  Future<Either<Failure, List<ExpenseRequestEntity>>> call() =>
+      repository.getHodHistoryExpenses();
+}
+
 // ── Approve Expense ───────────────────────────────────────────
 class ApproveExpenseUseCase implements UseCase<ExpenseRequestEntity, String> {
   final ExpenseRepository repository;

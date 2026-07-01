@@ -1,6 +1,7 @@
 // lib/features/expense/presentation/pages/hod/hod_home_page.dart
 import 'package:flutter/material.dart';
 import '../../../../../features/dashboard/presentation/pages/dashboard_page.dart';
+import 'hod_history_page.dart';
 import 'hod_review_page.dart';
 
 class HodHomePage extends StatefulWidget {
@@ -16,6 +17,7 @@ class _HodHomePageState extends State<HodHomePage> {
   final List<Widget> _pages = const [
     HodReviewPage(),
     DashboardPage(),
+    HodHistoryPage(),
   ];
 
   @override
@@ -34,6 +36,10 @@ class _HodHomePageState extends State<HodHomePage> {
           NavigationDestination(
             icon: Icon(Icons.dashboard_rounded),
             label: 'Dashboard',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.history_rounded),
+            label: 'History',
           ),
         ],
       ),
