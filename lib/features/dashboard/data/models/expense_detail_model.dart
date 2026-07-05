@@ -14,6 +14,8 @@ class ExpenseDetailModel {
   final String workflowStatus;
   final double totalPaid;
   final double outstanding;
+  final double bank1Payment;
+  final double bank2Payment;
   final String? lastPaymentMode;
   final String? createdAt;
   final String? description;
@@ -31,6 +33,8 @@ class ExpenseDetailModel {
     required this.workflowStatus,
     required this.totalPaid,
     required this.outstanding,
+    this.bank1Payment = 0.0,
+    this.bank2Payment = 0.0,
     this.lastPaymentMode,
     this.createdAt,
     this.description,
@@ -50,6 +54,8 @@ class ExpenseDetailModel {
       workflowStatus:       map['workflow_status']          as String,
       totalPaid:            (map['total_paid']    as num?)?.toDouble() ?? 0.0,
       outstanding:          (map['outstanding']   as num?)?.toDouble() ?? 0.0,
+      bank1Payment:         (map['bank1_total']   as num?)?.toDouble() ?? 0.0,
+      bank2Payment:         (map['bank2_total']   as num?)?.toDouble() ?? 0.0,
       lastPaymentMode:      map['last_payment_mode']        as String?,
       createdAt:            map['created_at']               as String?,
       description:          map['description']              as String?,
@@ -67,9 +73,11 @@ class ExpenseDetailModel {
         advancePaid:          advancePaid,
         employeePaymentStatus: employeePaymentStatus,
         workflowStatus:       workflowStatus,
-        totalPaid:            totalPaid,
-        outstanding:          outstanding,
-        lastPaymentMode:      lastPaymentMode,
+        totalPaid:          totalPaid,
+        outstanding:        outstanding,
+        bank1Payment:       bank1Payment,
+        bank2Payment:       bank2Payment,
+        lastPaymentMode:    lastPaymentMode,
         createdAt:            createdAt,
         description:          description,
       );

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../injection_container.dart';
+import '../../../../shared/utils/csv_export_helper.dart';
 import '../../domain/entities/expense_detail_entity.dart';
 import '../bloc/dashboard_bloc.dart';
 
@@ -129,13 +130,41 @@ class _EventDetailView extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // ── Detail Header ──────────────────────
-                  Text(
-                    'Expense Breakdown',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(
-                            fontWeight: FontWeight.bold),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Expense Breakdown',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                                fontWeight: FontWeight.bold),
+                      ),
+                      const Spacer(),
+                      if (state.details.isNotEmpty)
+                        FilledButton.tonalIcon(
+                          onPressed: () =>
+                              CsvExportHelper.exportExpenses(
+                                context: context,
+                                eventName: state.eventName,
+                                details: state.details,
+                              ),
+                          icon: const Icon(
+                              Icons.download_rounded,
+                              size: 16),
+                          label: const Text('Export CSV'),
+                          style: FilledButton.styleFrom(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6),
+                            tapTargetSize:
+                                MaterialTapTargetSize
+                                    .shrinkWrap,
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 8),
 

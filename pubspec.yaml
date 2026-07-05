@@ -54,6 +54,8 @@ dependencies:
   logger: ^2.3.0                    # Dev logging
   connectivity_plus: ^6.0.3         # Network state detection
   url_launcher: ^6.3.0
+  path_provider: ^2.1.3             # Save CSV to Documents on native platforms
+  web: ^1.1.0                       # Modern dart:js_interop web APIs (for CSV download)
 
 dev_dependencies:
   flutter_test:

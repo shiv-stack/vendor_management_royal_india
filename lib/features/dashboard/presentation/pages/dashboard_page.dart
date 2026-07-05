@@ -24,8 +24,6 @@ class _DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fmt = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),

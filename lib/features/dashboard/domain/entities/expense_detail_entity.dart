@@ -14,6 +14,8 @@ class ExpenseDetailEntity extends Equatable {
   final String workflowStatus;
   final double totalPaid;
   final double outstanding;
+  final double bank1Payment;
+  final double bank2Payment;
   final String? lastPaymentMode;
   final String? createdAt;
   final String? description;
@@ -31,6 +33,8 @@ class ExpenseDetailEntity extends Equatable {
     required this.workflowStatus,
     required this.totalPaid,
     required this.outstanding,
+    this.bank1Payment = 0.0,
+    this.bank2Payment = 0.0,
     this.lastPaymentMode,
     this.createdAt,
     this.description,
@@ -52,6 +56,8 @@ class ExpenseDetailEntity extends Equatable {
         raisedBy,
         totalAmount,
         totalPaid,
+        bank1Payment,
+        bank2Payment,
         outstanding,
       ];
 }
