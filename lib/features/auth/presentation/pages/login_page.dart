@@ -83,18 +83,11 @@ class _LoginView extends StatelessWidget {
 
                     // ── Logo / Branding ──────────────────
                     Center(
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Icon(
-                          Icons.receipt_long_rounded,
-                          color: Colors.white,
-                          size: 44,
-                        ),
+                      child: Image.asset(
+                        'assets/images/RIV-logo-new.png',
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.contain,
                       ),
                     ),
 
