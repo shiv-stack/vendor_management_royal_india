@@ -39,6 +39,19 @@ class UserManagementToggleActive extends UserManagementEvent {
   List<Object?> get props => [userId, isActive];
 }
 
+class UserManagementCreateUser extends UserManagementEvent {
+  final String email;
+  final String password;
+  final UserRole role;
+  const UserManagementCreateUser({
+    required this.email,
+    required this.password,
+    required this.role,
+  });
+  @override
+  List<Object?> get props => [email, password, role];
+}
+
 // ── States ────────────────────────────────────────────────────
 abstract class UserManagementState extends Equatable {
   const UserManagementState();
@@ -89,6 +102,7 @@ class UserManagementBloc
     on<UserManagementLoadAll>(_onLoadAll);
     on<UserManagementUpdateRole>(_onUpdateRole);
     on<UserManagementToggleActive>(_onToggleActive);
+    on<UserManagementCreateUser>(_onCreateUser);
   }
 
   Future<void> _onLoadAll(
@@ -145,6 +159,29 @@ class UserManagementBloc
                   ? 'User activated successfully.'
                   : 'User deactivated successfully.',
               users: users)),
+        );
+      },
+    );
+  }
+
+  Future<void> _onCreateUser(
+    UserManagementCreateUser event,
+    Emitter<UserManagementState> emit,
+  ) async {
+    emit(const UserManagementLoading());
+    final result = await repository.createUser(
+      email: event.email,
+      password: event.password,
+      role: event.role,
+    );
+    await result.fold(
+      (f) async => emit(UserManagementFailure(message: f.message)),
+      (_) async {
+        final listResult = await repository.getUsers();
+        listResult.fold(
+          (f) => emit(UserManagementFailure(message: f.message)),
+          (users) => emit(UserManagementActionSuccess(
+              message: 'User created successfully.', users: users)),
         );
       },
     );

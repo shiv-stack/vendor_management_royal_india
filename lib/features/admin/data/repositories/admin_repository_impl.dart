@@ -256,6 +256,26 @@ class AdminRepositoryImpl implements AdminRepository {
   }
 
   @override
+  Future<Either<Failure, UserEntity>> createUser({
+    required String email,
+    required String password,
+    required UserRole role,
+  }) async {
+    try {
+      final model = await remoteDataSource.createUser(
+        email: email,
+        password: password,
+        role: role,
+      );
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, UserEntity>> updateUserRole({
     required String userId,
     required UserRole role,

@@ -66,6 +66,11 @@ abstract class AdminRemoteDataSource {
 
   // User Management
   Future<List<UserModel>> getUsers();
+  Future<UserModel> createUser({
+    required String email,
+    required String password,
+    required UserRole role,
+  });
   Future<UserModel> updateUserRole({
     required String userId,
     required UserRole role,
@@ -362,6 +367,67 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
       return (data as List)
           .map((e) => UserModelX.fromSupabase(e))
           .toList();
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> createUser({
+    required String email,
+    required String password,
+    required UserRole role,
+  }) async {
+    try {
+      // Call the Edge Function (runs server-side with service_role key)
+      final response = await supabaseClient.functions.invoke(
+        'create-user',
+        body: {
+          'email':    email.trim().toLowerCase(),
+          'password': password,
+          'role':     role.name,
+        },
+      );
+
+      final responseData = response.data as Map<String, dynamic>?;
+
+      if (responseData == null) {
+        throw ServerException(message: 'No response from create-user function.');
+      }
+
+      if (responseData.containsKey('error')) {
+        throw ServerException(message: responseData['error'] as String);
+      }
+
+      final userId = responseData['user_id'] as String?;
+      if (userId == null) {
+        throw ServerException(message: 'User ID not returned from Edge Function.');
+      }
+
+      // Fetch the newly created profile row (inserted by DB trigger)
+      // Small retry loop to account for trigger latency
+      Map<String, dynamic>? profileRow;
+      for (int attempt = 0; attempt < 5; attempt++) {
+        await Future.delayed(const Duration(milliseconds: 400));
+        final rows = await supabaseClient
+            .from(SupabaseConstants.tableProfiles)
+            .select()
+            .eq('id', userId);
+        if (rows.isNotEmpty) {
+          profileRow = rows.first;
+          break;
+        }
+      }
+
+      if (profileRow == null) {
+        throw ServerException(
+          message: 'User created in auth but profile row not found yet. Please refresh.',
+        );
+      }
+
+      return UserModelX.fromSupabase(profileRow);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(message: e.toString());
     }

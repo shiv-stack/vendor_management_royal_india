@@ -61,8 +61,13 @@ abstract class AdminRepository {
   });
   Future<Either<Failure, Unit>> deleteVendor(String id);
 
-  // ── User Management ──────────────────────────────────────
+  // ── User Management ──────────────────────────────────────────
   Future<Either<Failure, List<UserEntity>>> getUsers();
+  Future<Either<Failure, UserEntity>> createUser({
+    required String email,
+    required String password,
+    required UserRole role,
+  });
   Future<Either<Failure, UserEntity>> updateUserRole({
     required String userId,
     required UserRole role,

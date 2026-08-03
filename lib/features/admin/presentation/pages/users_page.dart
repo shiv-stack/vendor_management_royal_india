@@ -66,6 +66,239 @@ class _UsersView extends StatelessWidget {
     );
   }
 
+  void _showCreateUserDialog(BuildContext context) {
+    // ⚠️ Capture the bloc BEFORE showDialog — dialog gets a new route context
+    // that is not under the BlocProvider, so we must inject it manually.
+    final bloc = context.read<UserManagementBloc>();
+
+    final formKey = GlobalKey<FormState>();
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    UserRole selectedRole = UserRole.employee;
+    bool obscurePassword = true;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => BlocProvider.value(
+        // Inject the existing bloc into the dialog's route context
+        value: bloc,
+        child: BlocListener<UserManagementBloc, UserManagementState>(
+          listener: (_, state) {
+            if (state is UserManagementActionSuccess) {
+              // Close dialog — SnackBar is shown by the outer page listener
+              Navigator.of(dialogCtx).pop();
+            }
+            // On failure: dialog stays open, SnackBar shown by outer listener
+          },
+          child: StatefulBuilder(
+            builder: (ctx, setState) {
+              return BlocBuilder<UserManagementBloc, UserManagementState>(
+                builder: (ctx, state) {
+                  final isLoading = state is UserManagementLoading;
+
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    title: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF6A1B9A).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.person_add_rounded,
+                            color: Color(0xFF6A1B9A),
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text('Create New User'),
+                      ],
+                    ),
+                    content: SizedBox(
+                      width: 360,
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Email field
+                            TextFormField(
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              autofillHints: const [AutofillHints.email],
+                              decoration: const InputDecoration(
+                                labelText: 'Email address',
+                                prefixIcon: Icon(Icons.email_outlined),
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (v) {
+                                if (v == null || v.trim().isEmpty) {
+                                  return 'Email is required';
+                                }
+                                final emailRegex = RegExp(
+                                    r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,}$');
+                                if (!emailRegex.hasMatch(v.trim())) {
+                                  return 'Enter a valid email address';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Password field
+                            StatefulBuilder(builder: (_, setObscure) {
+                              return TextFormField(
+                                controller: passwordController,
+                                obscureText: obscurePassword,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  prefixIcon:
+                                      const Icon(Icons.lock_outline_rounded),
+                                  border: const OutlineInputBorder(),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(obscurePassword
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined),
+                                    onPressed: () => setObscure(() =>
+                                        obscurePassword = !obscurePassword),
+                                  ),
+                                ),
+                                validator: (v) {
+                                  if (v == null || v.isEmpty) {
+                                    return 'Password is required';
+                                  }
+                                  if (v.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                              );
+                            }),
+                            const SizedBox(height: 20),
+
+                            // Role selection
+                            Text(
+                              'Assign Role',
+                              style: Theme.of(ctx)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 8),
+                            StatefulBuilder(builder: (_, setRole) {
+                              return Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: UserRole.values.map((role) {
+                                  final isSelected = selectedRole == role;
+                                  final roleColor = _roleColor(role);
+                                  return GestureDetector(
+                                    onTap: () =>
+                                        setRole(() => selectedRole = role),
+                                    child: AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 180),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 14, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? roleColor.withValues(alpha: 0.15)
+                                            : Colors.transparent,
+                                        borderRadius:
+                                            BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? roleColor
+                                              : Theme.of(ctx)
+                                                  .colorScheme
+                                                  .outline
+                                                  .withValues(alpha: 0.4),
+                                          width: isSelected ? 1.5 : 1,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        role.label,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w700
+                                              : FontWeight.w400,
+                                          color: isSelected
+                                              ? roleColor
+                                              : Theme.of(ctx)
+                                                  .colorScheme
+                                                  .onSurface
+                                                  .withValues(alpha: 0.7),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed:
+                            isLoading ? null : () => Navigator.of(dialogCtx).pop(),
+                        child: const Text('Cancel'),
+                      ),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6A1B9A),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                        ),
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                if (formKey.currentState?.validate() ?? false) {
+                                  ctx
+                                      .read<UserManagementBloc>()
+                                      .add(UserManagementCreateUser(
+                                        email: emailController.text.trim(),
+                                        password: passwordController.text,
+                                        role: selectedRole,
+                                      ));
+                                }
+                              },
+                        icon: isLoading
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                            : const Icon(Icons.person_add_rounded, size: 18),
+                        label: Text(isLoading ? 'Creating...' : 'Create User'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   Color _roleColor(UserRole role) {
     switch (role) {
       case UserRole.admin:    return const Color(0xFF993C1D);
@@ -80,6 +313,14 @@ class _UsersView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('User Management')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showCreateUserDialog(context),
+        backgroundColor: const Color(0xFF6A1B9A),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.person_add_rounded),
+        label: const Text('Add User'),
+        tooltip: 'Create a new user',
+      ),
       body: BlocConsumer<UserManagementBloc, UserManagementState>(
         listener: (context, state) {
           if (state is UserManagementActionSuccess) {
@@ -112,7 +353,7 @@ class _UsersView extends StatelessWidget {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
             itemCount: users.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
