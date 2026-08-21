@@ -16,7 +16,7 @@ class SignInUseCase implements UseCase<UserEntity, SignInParams> {
     // Delegate straight to repository.
     // Business validation (empty fields) is handled in BLoC/UI layer.
     return repository.signIn(
-      email: params.email,
+      employeeId: params.employeeId,
       password: params.password,
     );
   }
@@ -24,14 +24,14 @@ class SignInUseCase implements UseCase<UserEntity, SignInParams> {
 
 // Params class — carries inputs into the UseCase
 class SignInParams extends Equatable {
-  final String email;
+  final String employeeId;
   final String password;
 
   const SignInParams({
-    required this.email,
+    required this.employeeId,
     required this.password,
   });
 
   @override
-  List<Object> get props => [email, password];
+  List<Object> get props => [employeeId, password];
 }

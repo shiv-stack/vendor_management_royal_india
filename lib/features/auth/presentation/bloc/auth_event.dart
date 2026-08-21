@@ -15,16 +15,16 @@ class AuthCheckSessionEvent extends AuthEvent {
 
 // Fired when user taps Sign In button
 class AuthSignInEvent extends AuthEvent {
-  final String email;
+  final String employeeId;
   final String password;
 
   const AuthSignInEvent({
-    required this.email,
+    required this.employeeId,
     required this.password,
   });
 
   @override
-  List<Object> get props => [email, password];
+  List<Object> get props => [employeeId, password];
 }
 
 // Fired when user taps Sign Out

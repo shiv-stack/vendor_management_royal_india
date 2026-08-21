@@ -12,6 +12,9 @@ class UserEntity extends Equatable {
   final UserRole role;
   final String? fcmToken;
   final bool isActive;
+  // Unique employee login ID (e.g. RIV001). Nullable for legacy rows
+  // that have not yet been assigned an employee_id by the admin.
+  final String? employeeId;
 
   const UserEntity({
     required this.id,
@@ -20,6 +23,7 @@ class UserEntity extends Equatable {
     required this.role,
     this.fcmToken,
     this.isActive = true,
+    this.employeeId,
   });
 
   // ── Business logic helpers ───────────────────────────────
@@ -43,9 +47,10 @@ class UserEntity extends Equatable {
         role,
         fcmToken,
         isActive,
+        employeeId,
       ];
 
   @override
   String toString() =>
-      'UserEntity(id: $id, email: $email, role: ${role.label})';
+      'UserEntity(id: $id, email: $email, employeeId: $employeeId, role: ${role.label})';
 }

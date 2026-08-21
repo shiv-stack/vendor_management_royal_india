@@ -13,14 +13,14 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final _formKey    = GlobalKey<FormState>();
-  final _emailCtrl  = TextEditingController();
-  final _passCtrl   = TextEditingController();
-  bool _obscure     = true;
+  final _formKey          = GlobalKey<FormState>();
+  final _employeeIdCtrl   = TextEditingController();
+  final _passCtrl         = TextEditingController();
+  bool _obscure           = true;
 
   @override
   void dispose() {
-    _emailCtrl.dispose();
+    _employeeIdCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
   }
@@ -29,7 +29,7 @@ class _LoginFormState extends State<LoginForm> {
     if (!_formKey.currentState!.validate()) return;
     context.read<AuthBloc>().add(
           AuthSignInEvent(
-            email: _emailCtrl.text.trim(),
+            employeeId: _employeeIdCtrl.text.trim(),
             password: _passCtrl.text.trim(),
           ),
         );
@@ -46,23 +46,20 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Email ──────────────────────────────────
+              // ── Employee ID ────────────────────────────
               TextFormField(
-                controller: _emailCtrl,
-                keyboardType: TextInputType.emailAddress,
+                controller: _employeeIdCtrl,
+                keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
                 enabled: !isLoading,
                 decoration: const InputDecoration(
-                  labelText: 'Email address',
-                  prefixIcon: Icon(Icons.email_outlined),
+                  labelText: 'Employee ID',
+                  hintText: 'Enter your Employee ID',
+                  prefixIcon: Icon(Icons.badge_outlined),
                 ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
-                    return 'Enter your email';
-                  }
-                  if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,}$')
-                      .hasMatch(v.trim())) {
-                    return 'Enter a valid email';
+                    return 'Enter your Employee ID';
                   }
                   return null;
                 },

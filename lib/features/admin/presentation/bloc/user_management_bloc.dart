@@ -43,13 +43,28 @@ class UserManagementCreateUser extends UserManagementEvent {
   final String email;
   final String password;
   final UserRole role;
+  final String employeeId;
   const UserManagementCreateUser({
     required this.email,
     required this.password,
     required this.role,
+    required this.employeeId,
   });
   @override
-  List<Object?> get props => [email, password, role];
+  List<Object?> get props => [email, password, role, employeeId];
+}
+
+/// Assign or update the employee_id for an existing user
+/// (used by admin to on-board legacy users who have NULL employee_id).
+class UserManagementUpdateEmployeeId extends UserManagementEvent {
+  final String userId;
+  final String employeeId;
+  const UserManagementUpdateEmployeeId({
+    required this.userId,
+    required this.employeeId,
+  });
+  @override
+  List<Object?> get props => [userId, employeeId];
 }
 
 // ── States ────────────────────────────────────────────────────
@@ -103,6 +118,7 @@ class UserManagementBloc
     on<UserManagementUpdateRole>(_onUpdateRole);
     on<UserManagementToggleActive>(_onToggleActive);
     on<UserManagementCreateUser>(_onCreateUser);
+    on<UserManagementUpdateEmployeeId>(_onUpdateEmployeeId);
   }
 
   Future<void> _onLoadAll(
@@ -173,6 +189,7 @@ class UserManagementBloc
       email: event.email,
       password: event.password,
       role: event.role,
+      employeeId: event.employeeId,
     );
     await result.fold(
       (f) async => emit(UserManagementFailure(message: f.message)),
@@ -182,6 +199,28 @@ class UserManagementBloc
           (f) => emit(UserManagementFailure(message: f.message)),
           (users) => emit(UserManagementActionSuccess(
               message: 'User created successfully.', users: users)),
+        );
+      },
+    );
+  }
+
+  Future<void> _onUpdateEmployeeId(
+    UserManagementUpdateEmployeeId event,
+    Emitter<UserManagementState> emit,
+  ) async {
+    emit(const UserManagementLoading());
+    final result = await repository.updateEmployeeId(
+      userId: event.userId,
+      employeeId: event.employeeId,
+    );
+    await result.fold(
+      (f) async => emit(UserManagementFailure(message: f.message)),
+      (_) async {
+        final listResult = await repository.getUsers();
+        listResult.fold(
+          (f) => emit(UserManagementFailure(message: f.message)),
+          (users) => emit(UserManagementActionSuccess(
+              message: 'Employee ID assigned successfully.', users: users)),
         );
       },
     );

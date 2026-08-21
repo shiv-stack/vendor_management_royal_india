@@ -66,6 +66,104 @@ class _UsersView extends StatelessWidget {
     );
   }
 
+  /// Dialog to assign or update the Employee ID for a (legacy) user.
+  void _showEditEmployeeIdDialog(BuildContext context, UserEntity user) {
+    final bloc = context.read<UserManagementBloc>();
+    final controller = TextEditingController(text: user.employeeId ?? '');
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => BlocProvider.value(
+        value: bloc,
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6A1B9A).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.badge_outlined,
+                  color: Color(0xFF6A1B9A),
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Edit Employee ID'),
+                    Text(
+                      user.fullName,
+                      style: const TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.w400),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: 320,
+            child: Form(
+              key: formKey,
+              child: TextFormField(
+                controller: controller,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  labelText: 'Employee ID',
+                  hintText: 'Enter Employee ID',
+                  prefixIcon: Icon(Icons.badge_outlined),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Employee ID is required';
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6A1B9A),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () {
+                if (formKey.currentState?.validate() ?? false) {
+                  bloc.add(UserManagementUpdateEmployeeId(
+                    userId: user.id,
+                    employeeId: controller.text.trim(),
+                  ));
+                  Navigator.of(dialogCtx).pop();
+                }
+              },
+              icon: const Icon(Icons.save_outlined, size: 18),
+              label: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showCreateUserDialog(BuildContext context) {
     // ⚠️ Capture the bloc BEFORE showDialog — dialog gets a new route context
     // that is not under the BlocProvider, so we must inject it manually.
@@ -74,6 +172,7 @@ class _UsersView extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
+    final employeeIdController = TextEditingController();
     UserRole selectedRole = UserRole.employee;
     bool obscurePassword = true;
 
@@ -127,6 +226,25 @@ class _UsersView extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Employee ID field (required, auto-uppercase)
+                            TextFormField(
+                              controller: employeeIdController,
+                              keyboardType: TextInputType.text,
+                              decoration: const InputDecoration(
+                                labelText: 'Employee ID',
+                                hintText: 'Enter Employee ID',
+                                prefixIcon: Icon(Icons.badge_outlined),
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (v) {
+                                if (v == null || v.trim().isEmpty) {
+                                  return 'Employee ID is required';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+
                             // Email field
                             TextFormField(
                               controller: emailController,
@@ -272,6 +390,8 @@ class _UsersView extends StatelessWidget {
                                         email: emailController.text.trim(),
                                         password: passwordController.text,
                                         role: selectedRole,
+                                        employeeId: employeeIdController.text
+                                            .trim(),
                                       ));
                                 }
                               },
@@ -374,7 +494,32 @@ class _UsersView extends StatelessWidget {
                   title: Text(user.fullName,
                       style: const TextStyle(
                           fontWeight: FontWeight.w600)),
-                  subtitle: Text(user.email),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(user.email),
+                      // Show Employee ID or a warning badge if not yet assigned
+                      if (user.employeeId != null)
+                        Text(
+                          user.employeeId!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: color,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      else
+                        const Text(
+                          '⚠ No Employee ID assigned',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.orange,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                    ],
+                  ),
+                  isThreeLine: true,
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -408,10 +553,26 @@ class _UsersView extends StatelessWidget {
                               );
                         },
                       ),
+                      // Edit role button
                       IconButton(
                         icon: const Icon(Icons.manage_accounts),
+                        tooltip: 'Change role',
                         onPressed: () =>
                             _showRoleDialog(context, user),
+                      ),
+                      // Edit Employee ID button (badge icon)
+                      IconButton(
+                        icon: Icon(
+                          Icons.badge_outlined,
+                          color: user.employeeId == null
+                              ? Colors.orange
+                              : null,
+                        ),
+                        tooltip: user.employeeId == null
+                            ? 'Assign Employee ID'
+                            : 'Edit Employee ID',
+                        onPressed: () =>
+                            _showEditEmployeeIdDialog(context, user),
                       ),
                     ],
                   ),

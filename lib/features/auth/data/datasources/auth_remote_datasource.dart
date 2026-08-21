@@ -5,8 +5,9 @@ import '../../../../core/error/exceptions.dart';
 import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
+  /// Look up email by employee_id, then sign in with Supabase Auth.
   Future<UserModel> signIn({
-    required String email,
+    required String employeeId,
     required String password,
   });
   Future<void> signOut();
@@ -21,10 +22,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserModel> signIn({
-    required String email,
+    required String employeeId,
     required String password,
   }) async {
     try {
+      // Step 1: Resolve employee_id → email (anon select, only email column)
+      final rows = await supabaseClient
+          .from(SupabaseConstants.tableProfiles)
+          .select('email, employee_id')
+          .eq('employee_id', employeeId.trim())
+          .limit(1);
+
+      if (rows.isEmpty) {
+        throw const AppAuthException(
+            message: 'Employee ID not found. Please contact your administrator.');
+      }
+      final email = rows.first['email'] as String;
+
+      // Step 2: Authenticate with Supabase using the resolved email + password
       final response = await supabaseClient.auth.signInWithPassword(
         email: email,
         password: password,
@@ -36,6 +51,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             message: 'Sign in failed. No user returned.');
       }
 
+      // Step 3: Fetch full profile (authenticated call)
       final profileData = await supabaseClient
           .from(SupabaseConstants.tableProfiles)
           .select()

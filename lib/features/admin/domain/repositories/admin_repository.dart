@@ -67,6 +67,7 @@ abstract class AdminRepository {
     required String email,
     required String password,
     required UserRole role,
+    required String employeeId,
   });
   Future<Either<Failure, UserEntity>> updateUserRole({
     required String userId,
@@ -75,5 +76,10 @@ abstract class AdminRepository {
   Future<Either<Failure, UserEntity>> toggleUserActive({
     required String userId,
     required bool isActive,
+  });
+  /// Assign or update the employee_id for an existing (legacy) user.
+  Future<Either<Failure, UserEntity>> updateEmployeeId({
+    required String userId,
+    required String employeeId,
   });
 }

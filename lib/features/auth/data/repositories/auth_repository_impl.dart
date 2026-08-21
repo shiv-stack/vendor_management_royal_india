@@ -14,12 +14,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, UserEntity>> signIn({
-    required String email,
+    required String employeeId,
     required String password,
   }) async {
     try {
       final userModel = await remoteDataSource.signIn(
-        email: email,
+        employeeId: employeeId,
         password: password,
       );
       return Right(userModel.toEntity());

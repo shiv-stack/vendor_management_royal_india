@@ -70,6 +70,7 @@ abstract class AdminRemoteDataSource {
     required String email,
     required String password,
     required UserRole role,
+    required String employeeId,
   });
   Future<UserModel> updateUserRole({
     required String userId,
@@ -78,6 +79,11 @@ abstract class AdminRemoteDataSource {
   Future<UserModel> toggleUserActive({
     required String userId,
     required bool isActive,
+  });
+  /// Assign or update the employee_id for an existing user (e.g. legacy users).
+  Future<UserModel> updateEmployeeId({
+    required String userId,
+    required String employeeId,
   });
 }
 
@@ -377,15 +383,17 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
     required String email,
     required String password,
     required UserRole role,
+    required String employeeId,
   }) async {
     try {
       // Call the Edge Function (runs server-side with service_role key)
       final response = await supabaseClient.functions.invoke(
         'create-user',
         body: {
-          'email':    email.trim().toLowerCase(),
-          'password': password,
-          'role':     role.name,
+          'email':       email.trim().toLowerCase(),
+          'password':    password,
+          'role':        role.name,
+          'employee_id': employeeId.trim(),
         },
       );
 
@@ -461,6 +469,26 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
       final data = await supabaseClient
           .from(SupabaseConstants.tableProfiles)
           .update({'is_active': isActive})
+          .eq('id', userId)
+          .select()
+          .single();
+
+      return UserModelX.fromSupabase(data);
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> updateEmployeeId({
+    required String userId,
+    required String employeeId,
+  }) async {
+    try {
+      final normId = employeeId.trim();
+      final data = await supabaseClient
+          .from(SupabaseConstants.tableProfiles)
+          .update({'employee_id': normId})
           .eq('id', userId)
           .select()
           .single();

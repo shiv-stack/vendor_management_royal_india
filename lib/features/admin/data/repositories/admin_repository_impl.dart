@@ -260,12 +260,14 @@ class AdminRepositoryImpl implements AdminRepository {
     required String email,
     required String password,
     required UserRole role,
+    required String employeeId,
   }) async {
     try {
       final model = await remoteDataSource.createUser(
         email: email,
         password: password,
         role: role,
+        employeeId: employeeId,
       );
       return Right(model.toEntity());
     } on ServerException catch (e) {
@@ -302,6 +304,24 @@ class AdminRepositoryImpl implements AdminRepository {
       final model = await remoteDataSource.toggleUserActive(
         userId: userId,
         isActive: isActive,
+      );
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> updateEmployeeId({
+    required String userId,
+    required String employeeId,
+  }) async {
+    try {
+      final model = await remoteDataSource.updateEmployeeId(
+        userId: userId,
+        employeeId: employeeId,
       );
       return Right(model.toEntity());
     } on ServerException catch (e) {

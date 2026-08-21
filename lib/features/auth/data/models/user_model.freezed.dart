@@ -27,7 +27,9 @@ mixin _$UserModel {
   String? get fcmToken => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   String? get createdAt => throw _privateConstructorUsedError;
-  String? get updatedAt => throw _privateConstructorUsedError;
+  String? get updatedAt =>
+      throw _privateConstructorUsedError; // Unique employee login ID (e.g. RIV001). Nullable for legacy rows.
+  String? get employeeId => throw _privateConstructorUsedError;
 
   /// Serializes this UserModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,7 +54,8 @@ abstract class $UserModelCopyWith<$Res> {
       String? fcmToken,
       bool isActive,
       String? createdAt,
-      String? updatedAt});
+      String? updatedAt,
+      String? employeeId});
 }
 
 /// @nodoc
@@ -78,6 +81,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? isActive = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? employeeId = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -112,6 +116,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String?,
+      employeeId: freezed == employeeId
+          ? _value.employeeId
+          : employeeId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -132,7 +140,8 @@ abstract class _$$UserModelImplCopyWith<$Res>
       String? fcmToken,
       bool isActive,
       String? createdAt,
-      String? updatedAt});
+      String? updatedAt,
+      String? employeeId});
 }
 
 /// @nodoc
@@ -156,6 +165,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? isActive = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? employeeId = freezed,
   }) {
     return _then(_$UserModelImpl(
       id: null == id
@@ -190,6 +200,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String?,
+      employeeId: freezed == employeeId
+          ? _value.employeeId
+          : employeeId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -205,7 +219,8 @@ class _$UserModelImpl implements _UserModel {
       this.fcmToken,
       this.isActive = true,
       this.createdAt,
-      this.updatedAt});
+      this.updatedAt,
+      this.employeeId});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -227,10 +242,13 @@ class _$UserModelImpl implements _UserModel {
   final String? createdAt;
   @override
   final String? updatedAt;
+// Unique employee login ID (e.g. RIV001). Nullable for legacy rows.
+  @override
+  final String? employeeId;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, fullName: $fullName, role: $role, fcmToken: $fcmToken, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserModel(id: $id, email: $email, fullName: $fullName, role: $role, fcmToken: $fcmToken, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt, employeeId: $employeeId)';
   }
 
   @override
@@ -250,13 +268,15 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            (identical(other.employeeId, employeeId) ||
+                other.employeeId == employeeId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, email, fullName, role,
-      fcmToken, isActive, createdAt, updatedAt);
+      fcmToken, isActive, createdAt, updatedAt, employeeId);
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -283,7 +303,8 @@ abstract class _UserModel implements UserModel {
       final String? fcmToken,
       final bool isActive,
       final String? createdAt,
-      final String? updatedAt}) = _$UserModelImpl;
+      final String? updatedAt,
+      final String? employeeId}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
@@ -303,7 +324,10 @@ abstract class _UserModel implements UserModel {
   @override
   String? get createdAt;
   @override
-  String? get updatedAt;
+  String?
+      get updatedAt; // Unique employee login ID (e.g. RIV001). Nullable for legacy rows.
+  @override
+  String? get employeeId;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.

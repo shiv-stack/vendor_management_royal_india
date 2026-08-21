@@ -45,7 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await signIn(
       SignInParams(
-        email: event.email,
+        employeeId: event.employeeId,
         password: event.password,
       ),
     );
