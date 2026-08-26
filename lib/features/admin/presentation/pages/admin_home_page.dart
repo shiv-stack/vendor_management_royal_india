@@ -1,9 +1,9 @@
-// lib/features/admin/presentation/pages/admin_home_page.dart
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/services/session_service.dart';
 
 class AdminHomePage extends StatelessWidget {
   const AdminHomePage({super.key});
@@ -28,6 +28,7 @@ class _AdminHomeView extends StatelessWidget {
             tooltip: 'Sign out',
             onPressed: () async {
               await Supabase.instance.client.auth.signOut();
+              await SessionService.instance.clearSession();
               if (context.mounted) context.go(AppRoutes.login);
             },
           ),

@@ -8,6 +8,7 @@
 
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/services/session_service.dart';
 import 'package:vpms_royal_india/features/admin/data/datasources/admin_remote_datasource.dart';
 import 'package:vpms_royal_india/features/admin/data/repositories/admin_repository_impl.dart';
 import 'package:vpms_royal_india/features/admin/domain/repositories/admin_repository.dart';
@@ -42,6 +43,11 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  // ── Session cache (must run before router is created) ─────
+  // Restores the role from shared_preferences so the router guard has a
+  // valid cachedRole immediately on cold start / browser restore.
+  await SessionService.instance.init();
+
   // ── External ──────────────────────────────────────────────
   sl.registerLazySingleton<SupabaseClient>(
     () => Supabase.instance.client,

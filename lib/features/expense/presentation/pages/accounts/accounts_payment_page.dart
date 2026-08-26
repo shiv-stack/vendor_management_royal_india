@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/constants/app_constants.dart';
+import '../../../../../core/router/app_router.dart';
+import '../../../../../core/services/session_service.dart';
 import '../../../../../injection_container.dart';
 import '../../bloc/approval_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -289,7 +291,8 @@ class _AccountsPaymentView extends StatelessWidget {
             tooltip: 'Sign out',
             onPressed: () async {
               await Supabase.instance.client.auth.signOut();
-              if (context.mounted) context.go('/login');
+              await SessionService.instance.clearSession();
+              if (context.mounted) context.go(AppRoutes.login);
             },
           ),
         ],

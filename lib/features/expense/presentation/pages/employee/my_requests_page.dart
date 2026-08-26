@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/constants/app_constants.dart';
+import '../../../../../core/router/app_router.dart';
+import '../../../../../core/services/session_service.dart';
 import '../../../../../injection_container.dart';
 import '../../bloc/expense_bloc.dart';
 
@@ -58,7 +60,8 @@ class _MyRequestsView extends StatelessWidget {
             tooltip: 'Sign out',
             onPressed: () async {
               await Supabase.instance.client.auth.signOut();
-              if (context.mounted) context.go('/login');
+              await SessionService.instance.clearSession();
+              if (context.mounted) context.go(AppRoutes.login);
             },
           ),
         ],

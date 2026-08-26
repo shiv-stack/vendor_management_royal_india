@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../core/router/app_router.dart';
+import '../../../../../core/services/session_service.dart';
 import '../../../../../injection_container.dart';
 import '../../bloc/approval_bloc.dart';
 import '../../../../../features/expense/domain/entities/expense_request_entity.dart';
@@ -128,7 +130,8 @@ class _HodReviewView extends StatelessWidget {
             tooltip: 'Sign out',
             onPressed: () async {
               await Supabase.instance.client.auth.signOut();
-              if (context.mounted) context.go('/login');
+              await SessionService.instance.clearSession();
+              if (context.mounted) context.go(AppRoutes.login);
             },
           ),
         ],

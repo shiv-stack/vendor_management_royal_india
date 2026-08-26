@@ -2,12 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:vpms_royal_india/features/expense/presentation/pages/accounts/accounts_payment_page.dart';
 import 'package:vpms_royal_india/features/expense/presentation/pages/employee/my_requests_page.dart';
-import 'package:vpms_royal_india/features/expense/presentation/pages/hod/hod_review_page.dart';
 
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../constants/app_constants.dart';
+import '../services/session_service.dart';
 import '../../features/admin/presentation/pages/admin_home_page.dart';
 import '../../features/admin/presentation/pages/events_page.dart';
 import '../../features/admin/presentation/pages/expense_types_page.dart';
@@ -43,6 +42,31 @@ class AppRoutes {
 
   static const String accountsQueue = '/accounts/queue';
   static const String accountsDashboard = '/accounts/dashboard';
+
+  // All protected top-level home routes — used by the guard to detect
+  // when a user has landed on the wrong role's home via browser URL restore.
+  static const List<String> _roleRoots = [
+    adminHome,
+    employeeHome,
+    hodHome,
+    mdHome,
+    accountsHome,
+  ];
+
+  /// Returns the expected home route for a given role.
+  static String homeForRole(UserRole role) {
+    switch (role) {
+      case UserRole.admin:    return adminHome;
+      case UserRole.employee: return employeeHome;
+      case UserRole.hod:      return hodHome;
+      case UserRole.md:       return mdHome;
+      case UserRole.accounts: return accountsHome;
+    }
+  }
+
+  /// True if [location] starts with one of the top-level role-home paths.
+  static bool isRoleRoot(String location) =>
+      _roleRoots.any((r) => location == r || location.startsWith('$r/'));
 }
 
 class AppRouter {
@@ -60,7 +84,7 @@ class AppRouter {
         builder: (context, state) => const LoginPage(),
       ),
 
-      // ── Placeholder home routes (Phase 2+ will replace) ───
+      // ── Role home routes ──────────────────────────────────
       GoRoute(
         path: AppRoutes.adminHome,
         name: 'admin-home',
@@ -111,51 +135,74 @@ class AppRouter {
     ],
   );
 
-  // ── Route Guard ────────────────────────────────────────────
-  // Runs before every navigation. Checks auth state and redirects.
+  // ── Route Guard ────────────────────────────────────────────────────────────
+  //
+  // Decision tree (runs before every navigation):
+  //
+  //  1. No Supabase session  → /login  (unauthenticated access blocked)
+  //  2. Session exists + going to /login
+  //       → null (let through; LoginPage fires AuthCheckSessionEvent which
+  //         reads role from DB and routes to correct home via BlocListener)
+  //  3. Session exists + going to a role-root (e.g. /employee)
+  //       → validate against SessionService.cachedRole (DB-sourced, never JWT)
+  //         • correct role      → null (let through)
+  //         • wrong role        → redirect to their actual home
+  //         • no cached role yet → /login (forces fresh DB-backed session check)
+  //  4. Everything else (sub-routes, non-role-root protected routes) → null
+  //
+  // NOTE: We intentionally do NOT read role from session.user.userMetadata
+  // because that field is populated from the JWT which can be stale or absent.
+  // All role decisions come from the profiles table via SessionService.
+  // ──────────────────────────────────────────────────────────────────────────
   static Future<String?> _guard(
     BuildContext context,
     GoRouterState state,
   ) async {
     final session = Supabase.instance.client.auth.currentSession;
     final isLoggedIn = session != null;
-    final isGoingToLogin = state.matchedLocation == AppRoutes.login;
+    final location = state.matchedLocation;
+    final isGoingToLogin = location == AppRoutes.login;
 
-    // Not logged in → force to login
-    if (!isLoggedIn && !isGoingToLogin) {
-      return AppRoutes.login;
+    // ── 1. Unauthenticated → force to login ─────────────────
+    if (!isLoggedIn) {
+      return isGoingToLogin ? null : AppRoutes.login;
     }
 
-    // Logged in and trying to hit /login → redirect to role home
-    if (isLoggedIn && isGoingToLogin) {
-      return _homeForRole(session);
+    // ── 2. Authenticated + going to /login ──────────────────
+    // Let LoginPage show — its AuthBloc reads role from DB and routes correctly.
+    if (isGoingToLogin) {
+      return null;
     }
 
-    // All good
+    // ── 3. Authenticated + navigating to a role-root page ───
+    // Validate the destination matches the user's actual role.
+    if (AppRoutes.isRoleRoot(location)) {
+      final cachedRole = SessionService.instance.cachedRole;
+
+      // No cached role means the BLoC hasn't run its session check yet
+      // (e.g. cold start with browser restoring a deep URL on web, or
+      // first launch on mobile before LoginPage has loaded). Send to /login
+      // so LoginPage can perform the DB-backed session check first.
+      if (cachedRole == null) {
+        return AppRoutes.login;
+      }
+
+      final expectedHome = AppRoutes.homeForRole(cachedRole);
+
+      // If the user landed on the wrong role's home (e.g. an admin whose
+      // browser restored /employee from history), redirect to correct home.
+      if (!location.startsWith(expectedHome)) {
+        return expectedHome;
+      }
+    }
+
+    // ── 4. All good ─────────────────────────────────────────
     return null;
-  }
-
-  // Returns the correct home route based on user's role stored in JWT metadata
-  static String _homeForRole(Session session) {
-    final roleStr = session.user.userMetadata?['role'] as String? ?? 'employee';
-    final role = UserRole.fromString(roleStr);
-
-    switch (role) {
-      case UserRole.admin:
-        return AppRoutes.adminHome;
-      case UserRole.employee:
-        return AppRoutes.employeeHome;
-      case UserRole.hod:
-        return AppRoutes.hodHome;
-      case UserRole.md:
-        return AppRoutes.mdHome;
-      case UserRole.accounts:
-        return AppRoutes.accountsHome;
-    }
   }
 }
 
 // ── Temporary placeholder page until real pages are built ─────
+// ignore: unused_element
 class _PlaceholderPage extends StatelessWidget {
   final String title;
   const _PlaceholderPage({required this.title});
@@ -176,6 +223,7 @@ class _PlaceholderPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 await Supabase.instance.client.auth.signOut();
+                await SessionService.instance.clearSession();
                 if (context.mounted) context.go(AppRoutes.login);
               },
               child: const Text('Sign out'),
