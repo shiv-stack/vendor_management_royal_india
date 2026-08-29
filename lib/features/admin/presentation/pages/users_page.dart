@@ -480,99 +480,139 @@ class _UsersView extends StatelessWidget {
               final user = users[index];
               final color = _roleColor(user.role);
               return Card(
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: color.withValues(alpha: 0.15),
-                    child: Text(
-                      user.fullName.isNotEmpty
-                          ? user.fullName[0].toUpperCase()
-                          : '?',
-                      style: TextStyle(
-                          color: color, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  title: Text(user.fullName,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600)),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(user.email),
-                      // Show Employee ID or a warning badge if not yet assigned
-                      if (user.employeeId != null)
-                        Text(
-                          user.employeeId!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: color,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )
-                      else
-                        const Text(
-                          '⚠ No Employee ID assigned',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.orange,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                    ],
-                  ),
-                  isThreeLine: true,
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: color.withValues(alpha: 0.3)),
-                        ),
+                      // Avatar
+                      CircleAvatar(
+                        backgroundColor: color.withValues(alpha: 0.15),
                         child: Text(
-                          user.role.label,
+                          user.fullName.isNotEmpty
+                              ? user.fullName[0].toUpperCase()
+                              : '?',
                           style: TextStyle(
-                            fontSize: 11,
-                            color: color,
-                            fontWeight: FontWeight.w600,
-                          ),
+                              color: color, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      Switch(
-                        value: user.isActive,
-                        onChanged: (v) {
-                          context.read<UserManagementBloc>().add(
-                                UserManagementToggleActive(
-                                  userId: user.id,
-                                  isActive: v,
+                      const SizedBox(width: 12),
+                      // Name / email / employee-id — takes all remaining space
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.fullName,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              user.email,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.6),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            if (user.employeeId != null)
+                              Text(
+                                user.employeeId!,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: color,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              );
-                        },
-                      ),
-                      // Edit role button
-                      IconButton(
-                        icon: const Icon(Icons.manage_accounts),
-                        tooltip: 'Change role',
-                        onPressed: () =>
-                            _showRoleDialog(context, user),
-                      ),
-                      // Edit Employee ID button (badge icon)
-                      IconButton(
-                        icon: Icon(
-                          Icons.badge_outlined,
-                          color: user.employeeId == null
-                              ? Colors.orange
-                              : null,
+                              )
+                            else
+                              const Text(
+                                '⚠ No Employee ID',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            const SizedBox(height: 6),
+                            // Role badge + Switch on second row
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: color.withValues(alpha: 0.1),
+                                    borderRadius:
+                                        BorderRadius.circular(12),
+                                    border: Border.all(
+                                        color:
+                                            color.withValues(alpha: 0.3)),
+                                  ),
+                                  child: Text(
+                                    user.role.label,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: color,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Transform.scale(
+                                  scale: 0.85,
+                                  child: Switch(
+                                    value: user.isActive,
+                                    onChanged: (v) {
+                                      context
+                                          .read<UserManagementBloc>()
+                                          .add(
+                                            UserManagementToggleActive(
+                                              userId: user.id,
+                                              isActive: v,
+                                            ),
+                                          );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        tooltip: user.employeeId == null
-                            ? 'Assign Employee ID'
-                            : 'Edit Employee ID',
-                        onPressed: () =>
-                            _showEditEmployeeIdDialog(context, user),
+                      ),
+                      // Action icons — fixed column on the right
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.manage_accounts,
+                                size: 22),
+                            tooltip: 'Change role',
+                            onPressed: () =>
+                                _showRoleDialog(context, user),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.badge_outlined,
+                              size: 22,
+                              color: user.employeeId == null
+                                  ? Colors.orange
+                                  : null,
+                            ),
+                            tooltip: user.employeeId == null
+                                ? 'Assign Employee ID'
+                                : 'Edit Employee ID',
+                            onPressed: () =>
+                                _showEditEmployeeIdDialog(context, user),
+                          ),
+                        ],
                       ),
                     ],
                   ),
