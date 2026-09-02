@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:vpms_royal_india/features/expense/presentation/pages/employee/my_requests_page.dart';
+import 'package:vpms_royal_india/features/expense/presentation/pages/employee/employee_home_page.dart';
 
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../constants/app_constants.dart';
@@ -115,7 +115,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.employeeHome,
         name: 'employee-home',
-        builder: (context, state) => const MyRequestsPage(),
+        builder: (context, state) => const EmployeeHomePage(),
       ),
       GoRoute(
         path: AppRoutes.hodHome,
